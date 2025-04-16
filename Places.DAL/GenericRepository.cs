@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Places.Abstract.Repository;
+using Places.Abstract;
+using Places.DAL.Repositories;
 
-namespace Places.DAL
+namespace Places.DAL.Repositories
 {
     public class GenericRepository<T> : IRepository<T> where T : class
     {
@@ -40,17 +38,22 @@ namespace Places.DAL
 
         public void Update(T entity)
         {
-            _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _dbSet.Update(entity);
         }
 
         public void Delete(T entity)
         {
-            if (_context.Entry(entity).State == EntityState.Detached)
-            {
-                _dbSet.Attach(entity);
-            }
             _dbSet.Remove(entity);
+        }
+
+        public IEnumerable<T> GetWithInclude(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return query.ToList();
         }
     }
 }

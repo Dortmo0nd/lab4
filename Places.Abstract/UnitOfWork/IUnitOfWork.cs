@@ -1,7 +1,16 @@
-using Places.Abstract.Repository;
-namespace Places.Abstract.UnitOfWork;
-public interface IUnitOfWork : IDisposable
+using Places.Models;
+
+namespace Places.Abstract
 {
-    IRepository<T> GetRepository<T>() where T : class;
-    void SaveChanges();
+    public interface IUnitOfWork : IDisposable
+    {
+        IRepository<Place> PlaceRepository { get; }
+        IRepository<User> UserRepository { get; }
+        IRepository<Role> RoleRepository { get; }
+        IRepository<Review> ReviewRepository { get; }
+        IRepository<Question> QuestionRepository { get; }
+        IRepository<Media> MediaRepository { get; }
+        IRepository<Answer> AnswerRepository { get; }
+        void SaveChanges();
+    }
 }
