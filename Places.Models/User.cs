@@ -5,10 +5,10 @@ namespace Places.Models
     public class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public int RoleId { get; set; } // Зовнішній ключ для Role
+        public Role Role { get; set; }  // Навігаційна властивість
         public ICollection<Review> Reviews { get; set; }
-        public ICollection<Question> Questions { get; set; }
+        public ICollection<Answer> Answers { get; set; } // Відповідає 'u => u.Answers'
         public ICollection<Media> MediaFiles { get; set; }
     }
 }
