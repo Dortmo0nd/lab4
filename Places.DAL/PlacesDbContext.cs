@@ -1,21 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Places.Models;
 
-namespace Places.DAL
+namespace Places.DAL.Repositories
 {
     public class PlacesDbContext : DbContext
     {
         public DbSet<Place> Places { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<Media> Media { get; set; }
         public DbSet<Answer> Answers { get; set; }
-        public DbSet<Media> MediaFiles { get; set; }
-        public DbSet<Role> Roles { get; set; }
+
+        public PlacesDbContext(DbContextOptions<PlacesDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=places.db");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite("Data Source=places.db")
+                              .UseLazyLoadingProxies();
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,20 +53,18 @@ namespace Places.DAL
 
             modelBuilder.Entity<Answer>()
                 .HasOne(a => a.User)
-                .WithMany(u => u.Answers) // Виправлено 'Answes' на 'Answers'
+                .WithMany(u => u.Answers)
                 .HasForeignKey(a => a.UserId);
 
             modelBuilder.Entity<Media>()
                 .HasOne(m => m.Place)
                 .WithMany(p => p.MediaFiles)
-                .HasForeignKey(m => m.PlaceId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(m => m.PlaceId);
 
             modelBuilder.Entity<Media>()
                 .HasOne(m => m.User)
                 .WithMany(u => u.MediaFiles)
-                .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(m => m.UserId);
         }
     }
 }
