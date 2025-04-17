@@ -11,4 +11,19 @@
       <ProjectReference Include="..\Places.Models\Places.Models.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="obj\Debug\net9.0\Places.BLL.AssemblyInfoInputs.cache" />
+      <Content Include="obj\Debug\net9.0\Places.BLL.assets.cache" />
+      <Content Include="obj\Places.BLL.csproj.nuget.dgspec.json" />
+      <Content Include="obj\project.assets.json" />
+      <Content Include="obj\project.nuget.cache" />
+      <Content Include="obj\project.packagespec.json" />
+      <Content Include="obj\rider.project.model.nuget.info" />
+      <Content Include="obj\rider.project.restore.info" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="obj\Debug\net9.0\.NETCoreApp,Version=v9.0.AssemblyAttributes.cs" />
+    </ItemGroup>
+
 </Project>
