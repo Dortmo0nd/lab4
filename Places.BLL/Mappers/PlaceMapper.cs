@@ -15,7 +15,6 @@ namespace Places.BLL.Mappers
                 Description = place.Description,
                 Latitude = place.Latitude,
                 Longitude = place.Longitude
-                // Мапування інших властивостей
             };
         }
 
@@ -29,7 +28,6 @@ namespace Places.BLL.Mappers
                 Description = placeDto.Description,
                 Latitude = placeDto.Latitude,
                 Longitude = placeDto.Longitude
-                // Мапування інших властивостей
             };
         }
     }
