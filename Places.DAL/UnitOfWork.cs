@@ -9,15 +9,21 @@ namespace Places.DAL.Repositories
         private readonly PlacesDbContext _context;
         private IRepository<Place> _placeRepository;
         private IRepository<User> _userRepository;
-        private IRepository<Role> _roleRepository;
         private IRepository<Review> _reviewRepository;
         private IRepository<Question> _questionRepository;
         private IRepository<Media> _mediaRepository;
         private IRepository<Answer> _answerRepository;
-
+        
+        
         public UnitOfWork(PlacesDbContext context)
         {
             _context = context;
+            _placeRepository = new GenericRepository<Place>(context);
+            _userRepository = new GenericRepository<User>(context);
+            _reviewRepository = new GenericRepository<Review>(context);
+            _questionRepository = new GenericRepository<Question>(context);
+            _mediaRepository = new GenericRepository<Media>(context);
+            _answerRepository = new GenericRepository<Answer>(context);
         }
 
         public IRepository<Place> PlaceRepository
@@ -28,11 +34,6 @@ namespace Places.DAL.Repositories
         public IRepository<User> UserRepository
         {
             get { return _userRepository ??= new GenericRepository<User>(_context); }
-        }
-
-        public IRepository<Role> RoleRepository
-        {
-            get { return _roleRepository ??= new GenericRepository<Role>(_context); }
         }
 
         public IRepository<Review> ReviewRepository

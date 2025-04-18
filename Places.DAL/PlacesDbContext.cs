@@ -7,7 +7,7 @@ namespace Places.DAL.Repositories
     {
         public DbSet<Place> Places { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        //public DbSet<Role> Roles { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Media> Media { get; set; }
@@ -26,10 +26,7 @@ namespace Places.DAL.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Role)
-                .WithMany(r => r.Users)
-                .HasForeignKey(u => u.RoleId);
+            
 
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Place)

@@ -6,7 +6,6 @@ namespace Places.Abstract
     {
         IRepository<Place> PlaceRepository { get; }
         IRepository<User> UserRepository { get; }
-        IRepository<Role> RoleRepository { get; }
         IRepository<Review> ReviewRepository { get; }
         IRepository<Question> QuestionRepository { get; }
         IRepository<Media> MediaRepository { get; }
