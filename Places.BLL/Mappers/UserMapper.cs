@@ -1,5 +1,5 @@
-using Places.BLL.DTO;
 using Places.Models;
+using Places.BLL.DTO;
 
 namespace Places.BLL.Mappers
 {
@@ -11,7 +11,8 @@ namespace Places.BLL.Mappers
             return new UserDTO
             {
                 Id = user.Id,
-                RoleId = user.RoleId
+                Role = user.Role,
+                Password = user.Password
             };
         }
 
@@ -21,7 +22,8 @@ namespace Places.BLL.Mappers
             return new User
             {
                 Id = userDto.Id,
-                RoleId = userDto.RoleId
+                Role = userDto.Role,
+                Password = userDto.Password
             };
         }
     }

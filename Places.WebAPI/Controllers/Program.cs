@@ -4,10 +4,14 @@ using Places.BLL.Interfaces;
 using Places.BLL.Mappers;
 using Places.BLL.Services;
 using Places.Abstract;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -17,7 +21,6 @@ builder.Services.AddDbContext<PlacesDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
@@ -25,7 +28,6 @@ builder.Services.AddScoped<IAnswerService, AnswerService>();
 
 builder.Services.AddScoped<PlaceMapper>();
 builder.Services.AddScoped<UserMapper>();
-builder.Services.AddScoped<RoleMapper>();
 builder.Services.AddScoped<ReviewMapper>();
 builder.Services.AddScoped<QuestionMapper>();
 builder.Services.AddScoped<MediaMapper>();

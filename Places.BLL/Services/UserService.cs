@@ -6,6 +6,7 @@ using Places.BLL.Interfaces;
 using Places.BLL.Mappers;
 using Places.Abstract;
 using Places.Models;
+using BCrypt.Net;
 
 namespace Places.BLL.Services
 {
@@ -34,20 +35,22 @@ namespace Places.BLL.Services
 
         public void AddUser(UserDTO userDto)
         {
-            if (userDto == null || userDto.RoleId <= 0)
+            if (userDto == null || string.IsNullOrEmpty(userDto.Password))
                 throw new ArgumentException("Invalid user data");
 
             var user = _mapper.ToEntity(userDto);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
             _unitOfWork.UserRepository.Add(user);
             _unitOfWork.SaveChanges();
         }
 
         public void UpdateUser(UserDTO userDto)
         {
-            if (userDto == null || userDto.RoleId <= 0)
+            if (userDto == null || string.IsNullOrEmpty(userDto.Password))
                 throw new ArgumentException("Invalid user data");
 
             var user = _mapper.ToEntity(userDto);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
             _unitOfWork.UserRepository.Update(user);
             _unitOfWork.SaveChanges();
         }

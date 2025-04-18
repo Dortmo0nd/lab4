@@ -38,8 +38,8 @@ namespace Places.BLL.Services
                 throw new ArgumentException("Invalid question data");
 
             var user = _unitOfWork.UserRepository.GetById(userId);
-            if (user == null || user.Role.Name != "Manager")
-                throw new UnauthorizedAccessException("Only managers can add questions");
+            if (user == null || user.Role != User.UserRole.Admin)
+                throw new UnauthorizedAccessException("Only admins can add questions");
 
             var question = _mapper.ToEntity(questionDto);
             _unitOfWork.QuestionRepository.Add(question);
