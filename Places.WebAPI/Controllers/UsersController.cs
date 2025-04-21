@@ -50,5 +50,14 @@ namespace Places.WebAPI.Controllers
             _userService.DeleteUser(id);
             return NoContent();
         }
+        
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDTO login)
+        {
+            if (_userService.VerifyPassword(login.UserId, login.Password))
+                return Ok("Login successful");
+            else
+                return Unauthorized("Invalid credentials");
+        }
     }
 }
