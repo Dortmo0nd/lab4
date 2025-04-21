@@ -64,5 +64,13 @@ namespace Places.BLL.Services
                 _unitOfWork.SaveChanges();
             }
         }
+        public bool VerifyPassword(int userId, string password)
+        {
+            var user = _unitOfWork.UserRepository.GetById(userId);
+            if (user == null)
+                return false;
+
+            return BCrypt.Net.BCrypt.Verify(password, user.Password);
+        }
     }
 }
