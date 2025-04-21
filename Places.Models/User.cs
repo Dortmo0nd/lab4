@@ -5,6 +5,7 @@ namespace Places.Models
     public class User
     {
         public int Id { get; set; }
+        public string Full_name { get; set; } 
         public UserRole Role { get; set; }
         public string Password { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }

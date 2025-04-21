@@ -11,6 +11,7 @@ namespace Places.BLL.Mappers
             return new UserDTO
             {
                 Id = user.Id,
+                Full_name = user.Full_name,
                 Role = user.Role,
                 Password = user.Password
             };
@@ -22,6 +23,7 @@ namespace Places.BLL.Mappers
             return new User
             {
                 Id = userDto.Id,
+                Full_name = userDto.Full_name,
                 Role = userDto.Role,
                 Password = userDto.Password
             };

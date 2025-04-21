@@ -18,7 +18,6 @@ namespace Places.DAL.Repositories
         
         public DbSet<Place> Places { get; set; }
         public DbSet<User> Users { get; set; }
-        //public DbSet<Role> Roles { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Media> Media { get; set; }
