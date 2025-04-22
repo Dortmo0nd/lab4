@@ -1,0 +1,14 @@
+Places.Abstract/obj/
+Places.Abstract/bin/
+Places.BLL/obj/
+Places.BLL/bin/
+Places.DAL/obj/
+Places.DAL/bin/
+Places.Models/obj/
+Places.Models/bin/
+Places.WebAPI/obj/
+Places.WebAPI/bin/
+Places.DAL/Migrations
+Places.WebAPI/places.db
+Places.WebAPI/places.db-shm
+Places.WebAPI/places.db-wal
