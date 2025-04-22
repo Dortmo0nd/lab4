@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("Places.Abstract")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Places.WebAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+047eeea21bda5ce399416efe514f41c2acdf5a67")]
-[assembly: System.Reflection.AssemblyProductAttribute("Places.Abstract")]
-[assembly: System.Reflection.AssemblyTitleAttribute("Places.Abstract")]
+[assembly: System.Reflection.AssemblyProductAttribute("Places.WebAPI")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Places.WebAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Создано классом WriteCodeFragment MSBuild.

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "4JKS1jZlM0s=",
+  "success": true,
+  "projectFilePath": "D:\\Rider_project\\Places\\Places.BLL\\Places.BLL.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\yibes\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
