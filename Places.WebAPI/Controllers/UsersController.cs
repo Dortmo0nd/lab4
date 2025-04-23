@@ -4,9 +4,7 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : Controller
     {
         private readonly IUserService _userService;
 
@@ -15,49 +13,70 @@ namespace Places.WebAPI.Controllers
             _userService = userService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var user = _userService.GetUserById(id);
-            return user != null ? Ok(user) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var users = _userService.GetAllUsers();
-            return Ok(users);
+            return View(users);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var user = _userService.GetUserById(id);
+            if (user == null)
+                return NotFound();
+            return View(user);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] UserDTO user)
+        public IActionResult Create(UserDTO user)
         {
-            _userService.AddUser(user);
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+            if (ModelState.IsValid)
+            {
+                _userService.AddUser(user);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] UserDTO user)
+        public IActionResult Edit(int id)
         {
-            if (id != user.Id) return BadRequest();
-            _userService.UpdateUser(user);
-            return NoContent();
+            var user = _userService.GetUserById(id);
+            if (user == null)
+                return NotFound();
+            return View(user);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, UserDTO user)
+        {
+            if (id != user.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _userService.UpdateUser(user);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
+        }
+
         public IActionResult Delete(int id)
         {
-            _userService.DeleteUser(id);
-            return NoContent();
+            var user = _userService.GetUserById(id);
+            if (user == null)
+                return NotFound();
+            return View(user);
         }
-        
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDTO login)
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
         {
-            if (_userService.VerifyPassword(login.UserId, login.Password))
-                return Ok("Login successful");
-            else
-                return Unauthorized("Invalid credentials");
+            _userService.DeleteUser(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
