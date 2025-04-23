@@ -18,3 +18,13 @@ Places.DAL/Migrations
 Places.WebAPI/places.db
 Places.WebAPI/places.db-shm
 Places.WebAPI/places.db-wal
+
+Places.Abstract\obj\Debug\net9.0
+
+Places.BLL\obj\Debug\net9.0
+
+Places.DAL\obj\Debug\net9.0
+
+Places.Models\obj\Debug\net9.0
+
+Places.WebAPI\obj\Debug\net9.0
