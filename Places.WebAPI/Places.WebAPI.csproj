@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -14,6 +15,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
@@ -24,6 +26,41 @@
       <ProjectReference Include="..\Places.BLL\Places.BLL.csproj" />
       <ProjectReference Include="..\Places.DAL\Places.DAL.csproj" />
       <ProjectReference Include="..\Places.Models\Places.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Answers\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Answers\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Answers\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Answers\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Answers\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Media\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Media\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Media\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Media\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Media\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Places\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Places\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Places\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Places\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Places\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Questions\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Questions\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Questions\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Questions\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Questions\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Reviews\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Reviews\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Reviews\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Reviews\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Reviews\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Users\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Users\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Users\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Users\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Users\Index.cshtml" />
     </ItemGroup>
 
 </Project>

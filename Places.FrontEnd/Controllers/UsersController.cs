@@ -78,5 +78,16 @@ namespace Places.WebAPI.Controllers
             _userService.DeleteUser(id);
             return RedirectToAction(nameof(Index));
         }
+        
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDTO loginDto)
+        {
+            if (_userService.VerifyPassword(loginDto.UserId, loginDto.Password))
+            {
+                var user = _userService.GetUserById(loginDto.UserId);
+                return Ok(user);
+            }
+            return Unauthorized();
+        }
     }
 }

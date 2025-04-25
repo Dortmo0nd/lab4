@@ -37,13 +37,38 @@ builder.Services.AddScoped<AnswerMapper>();
 
 var app = builder.Build();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "../Places.FrontEnd/src";
+    if (app.Environment.IsDevelopment())
+    {
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000"); // Зміна з 5215 на 3000
+    }
+});
+
+//app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles(); // Для статичних файлів (CSS, JS)
 app.UseRouting();
 app.UseAuthorization();
