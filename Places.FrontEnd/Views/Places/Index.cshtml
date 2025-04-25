@@ -1,0 +1,33 @@
+@model IEnumerable<Places.BLL.DTO.PlaceDTO>
+
+<h2>Places</h2>
+<p><a asp-action="Create">Create New</a></p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var place in Model)
+    {
+        <tr>
+            <td>@place.Id</td>
+            <td>@place.Name</td>
+            <td>@place.Description</td>
+            <td>@place.Latitude</td>
+            <td>@place.Longitude</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@place.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@place.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@place.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
