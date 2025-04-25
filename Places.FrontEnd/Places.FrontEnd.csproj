@@ -11,43 +11,4 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <AdditionalFiles Include="Views\Answers\Create.cshtml" />
-      <AdditionalFiles Include="Views\Answers\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Answers\Details.cshtml" />
-      <AdditionalFiles Include="Views\Answers\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Answers\Index.cshtml" />
-      <AdditionalFiles Include="Views\Home\Index.cshtml" />
-      <AdditionalFiles Include="Views\Media\Create.cshtml" />
-      <AdditionalFiles Include="Views\Media\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Media\Details.cshtml" />
-      <AdditionalFiles Include="Views\Media\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Media\Index.cshtml" />
-      <AdditionalFiles Include="Views\Places\Create.cshtml" />
-      <AdditionalFiles Include="Views\Places\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Places\Details.cshtml" />
-      <AdditionalFiles Include="Views\Places\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Places\Index.cshtml" />
-      <AdditionalFiles Include="Views\Questions\Create.cshtml" />
-      <AdditionalFiles Include="Views\Questions\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Questions\Details.cshtml" />
-      <AdditionalFiles Include="Views\Questions\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Questions\Index.cshtml" />
-      <AdditionalFiles Include="Views\Reviews\Create.cshtml" />
-      <AdditionalFiles Include="Views\Reviews\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Reviews\Details.cshtml" />
-      <AdditionalFiles Include="Views\Reviews\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Reviews\Index.cshtml" />
-      <AdditionalFiles Include="Views\Shared\_Layout.cshtml" />
-      <AdditionalFiles Include="Views\Users\Create.cshtml" />
-      <AdditionalFiles Include="Views\Users\Delete.cshtml" />
-      <AdditionalFiles Include="Views\Users\Details.cshtml" />
-      <AdditionalFiles Include="Views\Users\Edit.cshtml" />
-      <AdditionalFiles Include="Views\Users\Index.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Places.BLL\Places.BLL.csproj" />
-    </ItemGroup>
-
 </Project>
