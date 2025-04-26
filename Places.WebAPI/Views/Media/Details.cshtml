@@ -1,19 +1,21 @@
-@page
-@model Places.WebAPI.Views.Media.Details
-
-@{
-    Layout = null;
-}
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+<h2>Media Details</h2>
 <div>
-    
+    <h4>Media</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+        <dt class="col-sm-2">File Path</dt>
+        <dd class="col-sm-10">@Model.FilePath</dd>
+        <dt class="col-sm-2">Type</dt>
+        <dd class="col-sm-10">@Model.Type</dd>
+        <dt class="col-sm-2">Place Id</dt>
+        <dd class="col-sm-10">@Model.PlaceId</dd>
+        <dt class="col-sm-2">User Id</dt>
+        <dd class="col-sm-10">@Model.UserId</dd>
+    </dl>
 </div>
-</body>
-</html>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a> |
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

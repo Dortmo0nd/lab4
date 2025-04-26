@@ -1,19 +1,39 @@
-@page
-@model Places.WebAPI.Views.Reviews.Index
+@model IEnumerable<Places.BLL.DTO.ReviewDTO>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Reviews";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+<h2>Reviews</h2>
 
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
-</div>
-</body>
-</html>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Content</th>
+        <th>Place Id</th>
+        <th>User Id</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var review in Model)
+    {
+        <tr>
+            <td>@review.Id</td>
+            <td>@review.Content</td>
+            <td>@review.PlaceId</td>
+            <td>@review.UserId</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@review.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@review.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-const api = axios.create({
-    baseURL: 'http://localhost:5215/api', // URL вашого WebAPI
-});
+const API_URL = 'http://localhost:5215/api'; // Адреса вашого API з launchSettings.json
 
-export const getPlaces = () => api.get('/places').then(res => res.data);
-export const addPlace = (place) => api.post('/places', place).then(res => res.data);
-export const deletePlace = (id) => api.delete(`/places/${id}`);
-export const getReviews = () => api.get('/reviews').then(res => res.data);
-export const addReview = (review) => api.post('/reviews', review).then(res => res.data);
+export const getPlaces = () => axios.get(`${API_URL}/Places`);
+export const getPlaceById = (id) => axios.get(`${API_URL}/Places/${id}`);
+export const createPlace = (place) => axios.post(`${API_URL}/Places`, place);
+export const updatePlace = (id, place) => axios.put(`${API_URL}/Places/${id}`, place);
+export const deletePlace = (id) => axios.delete(`${API_URL}/Places/${id}`);

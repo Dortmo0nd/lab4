@@ -1,19 +1,38 @@
-@page
-@model Places.WebAPI.Views.Index
+@model IEnumerable<Places.BLL.DTO.AnswerDTO>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Answers";
 }
 
-<!DOCTYPE html>
+<h2>Answers</h2>
 
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
-</div>
-</body>
-</html>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Content</th>
+        <th>Question Id</th>
+        <th>User Id</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var answer in Model)
+    {
+        <tr>
+            <td>@answer.Id</td>
+            <td>@answer.Content</td>
+            <td>@answer.QuestionId</td>
+            <td>@answer.UserId</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@answer.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@answer.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@answer.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

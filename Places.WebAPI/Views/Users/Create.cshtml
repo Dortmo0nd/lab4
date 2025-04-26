@@ -1,25 +1,36 @@
-@model Places.BLL.DTO.UserDTO
+@model IEnumerable<Places.BLL.DTO.UserDTO>
 
-<h2>Create User</h2>
+@{
+    ViewData["Title"] = "Users";
+}
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="Full_name" class="control-label"></label>
-        <input asp-for="Full_name" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Role" class="control-label"></label>
-        <select asp-for="Role" class="form-control" asp-items="Html.GetEnumSelectList<Places.Models.User.UserRole>()"></select>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password" class="control-label"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-    </div>
-</form>
+<h2>Users</h2>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Full Name</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Full_name</td>
+            <td>@user.Role</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@user.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
