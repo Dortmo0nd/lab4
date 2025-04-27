@@ -4,6 +4,7 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
+    // UsersController
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
@@ -40,6 +41,7 @@ namespace Places.WebAPI.Controllers
                 _userService.AddUser(user);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
 
@@ -61,6 +63,7 @@ namespace Places.WebAPI.Controllers
                 _userService.UpdateUser(user);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
 

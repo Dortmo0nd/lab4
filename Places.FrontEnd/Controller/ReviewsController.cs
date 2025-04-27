@@ -4,27 +4,27 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
-    public class UsersController : Controller
+    public class ReviewsController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IReviewService _reviewService;
 
-        public UsersController(IUserService userService)
+        public ReviewsController(IReviewService reviewService)
         {
-            _userService = userService;
+            _reviewService = reviewService;
         }
 
         public IActionResult Index()
         {
-            var users = _userService.GetAllUsers();
-            return View(users);
+            var reviews = _reviewService.GetAllReviews();
+            return View(reviews);
         }
 
         public IActionResult Details(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
                 return NotFound();
-            return View(user);
+            return View(review);
         }
 
         public IActionResult Create()
@@ -33,49 +33,49 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(UserDTO user)
+        public IActionResult Create(ReviewDTO review)
         {
             if (ModelState.IsValid)
             {
-                _userService.AddUser(user);
+                _reviewService.AddReview(review);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(review);
         }
 
         public IActionResult Edit(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
                 return NotFound();
-            return View(user);
+            return View(review);
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, UserDTO user)
+        public IActionResult Edit(int id, ReviewDTO review)
         {
-            if (id != user.Id)
+            if (id != review.Id)
                 return BadRequest();
             if (ModelState.IsValid)
             {
-                _userService.UpdateUser(user);
+                _reviewService.UpdateReview(review);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(review);
         }
 
         public IActionResult Delete(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
                 return NotFound();
-            return View(user);
+            return View(review);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _userService.DeleteUser(id);
+            _reviewService.DeleteReview(id);
             return RedirectToAction(nameof(Index));
         }
     }

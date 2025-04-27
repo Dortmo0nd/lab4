@@ -4,27 +4,27 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
-    public class UsersController : Controller
+    public class PlacesController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IPlaceService _placeService;
 
-        public UsersController(IUserService userService)
+        public PlacesController(IPlaceService placeService)
         {
-            _userService = userService;
+            _placeService = placeService;
         }
 
         public IActionResult Index()
         {
-            var users = _userService.GetAllUsers();
-            return View(users);
+            var places = _placeService.GetAllPlaces();
+            return View(places);
         }
 
         public IActionResult Details(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
                 return NotFound();
-            return View(user);
+            return View(place);
         }
 
         public IActionResult Create()
@@ -33,49 +33,49 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(UserDTO user)
+        public IActionResult Create(PlaceDTO place)
         {
             if (ModelState.IsValid)
             {
-                _userService.AddUser(user);
+                _placeService.AddPlace(place);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(place);
         }
 
         public IActionResult Edit(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
                 return NotFound();
-            return View(user);
+            return View(place);
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, UserDTO user)
+        public IActionResult Edit(int id, PlaceDTO place)
         {
-            if (id != user.Id)
+            if (id != place.Id)
                 return BadRequest();
             if (ModelState.IsValid)
             {
-                _userService.UpdateUser(user);
+                _placeService.UpdatePlace(place);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(place);
         }
 
         public IActionResult Delete(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
                 return NotFound();
-            return View(user);
+            return View(place);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _userService.DeleteUser(id);
+            _placeService.DeletePlace(id);
             return RedirectToAction(nameof(Index));
         }
     }

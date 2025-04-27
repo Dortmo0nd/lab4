@@ -47,7 +47,7 @@ builder.Services.AddScoped<AnswerMapper>();
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontend");
+//app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {
@@ -56,14 +56,16 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-if (!app.Environment.IsDevelopment())
+/*if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
-}
-app.UseStaticFiles(); // Для статичних файлів (CSS, JS)
-app.UseRouting();
-app.UseAuthorization();
+}*/
 
+app.UseStaticFiles(); // Для статичних файлів (CSS, JS)
+app.UseAuthorization();
+app.UseDeveloperExceptionPage();
+
+app.UseRouting();
 // Налаштування маршруту за замовчуванням для MVC
 app.MapControllerRoute(
     name: "default",

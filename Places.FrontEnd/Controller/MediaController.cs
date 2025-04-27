@@ -4,27 +4,27 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
-    public class UsersController : Controller
+    public class MediaController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IMediaService _mediaService;
 
-        public UsersController(IUserService userService)
+        public MediaController(IMediaService mediaService)
         {
-            _userService = userService;
+            _mediaService = mediaService;
         }
 
         public IActionResult Index()
         {
-            var users = _userService.GetAllUsers();
-            return View(users);
+            var media = _mediaService.GetAllMedia();
+            return View(media);
         }
 
         public IActionResult Details(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
                 return NotFound();
-            return View(user);
+            return View(media);
         }
 
         public IActionResult Create()
@@ -33,49 +33,49 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(UserDTO user)
+        public IActionResult Create(MediaDTO media)
         {
             if (ModelState.IsValid)
             {
-                _userService.AddUser(user);
+                _mediaService.AddMedia(media);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(media);
         }
 
         public IActionResult Edit(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
                 return NotFound();
-            return View(user);
+            return View(media);
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, UserDTO user)
+        public IActionResult Edit(int id, MediaDTO media)
         {
-            if (id != user.Id)
+            if (id != media.Id)
                 return BadRequest();
             if (ModelState.IsValid)
             {
-                _userService.UpdateUser(user);
+                _mediaService.UpdateMedia(media);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(media);
         }
 
         public IActionResult Delete(int id)
         {
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
                 return NotFound();
-            return View(user);
+            return View(media);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _userService.DeleteUser(id);
+            _mediaService.DeleteMedia(id);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -99,3 +99,22 @@ footer {
 .text-danger {
     color: #dc3545;
 }
+
+.navbar {
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+.nav-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+.nav-list li a {
+    text-decoration: none;
+    color: #007bff;
+}
+.nav-list li a:hover {
+    text-decoration: underline;
+}
+
