@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MediaController : ControllerBase
+    public class MediaController : Controller
     {
         private readonly IMediaService _mediaService;
 
@@ -15,40 +15,72 @@ namespace Places.WebAPI.Controllers
             _mediaService = mediaService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var media = _mediaService.GetMediaById(id);
-            return media != null ? Ok(media) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var media = _mediaService.GetAllMedia();
-            return Ok(media);
+            return View(media);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            return View(media);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] MediaDTO media)
+        [Authorize]
+        public IActionResult Create(MediaDTO media)
         {
-            _mediaService.AddMedia(media);
-            return CreatedAtAction(nameof(Get), new { id = media.Id }, media);
+            if (ModelState.IsValid)
+            {
+                media.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                _mediaService.AddMedia(media);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(media);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] MediaDTO media)
+        public IActionResult Edit(int id)
         {
-            if (id != media.Id) return BadRequest();
-            _mediaService.UpdateMedia(media);
-            return NoContent();
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            return View(media);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, MediaDTO media)
+        {
+            if (id != media.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _mediaService.UpdateMedia(media);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(media);
+        }
+
         public IActionResult Delete(int id)
         {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            return View(media);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
             _mediaService.DeleteMedia(id);
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
