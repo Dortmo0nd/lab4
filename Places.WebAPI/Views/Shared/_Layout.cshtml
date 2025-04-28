@@ -1,4 +1,3 @@
-<!-- Views/Shared/_Layout.cshtml -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,26 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Places App</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .navbar { margin-bottom: 20px; }
+        .nav-list { list-style-type: none; padding: 0; display: flex; gap: 10px; }
+        .nav-list li { display: inline; }
+    </style>
 </head>
 <body>
-<<header>
-    <nav class="navbar">
-        <ul class="nav-list">
-            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-            <li><a asp-controller="Users" asp-action="Index">Users</a></li>
-            <li><a asp-controller="Places" asp-action="Index">Places</a></li>
-            <li><a asp-controller="Reviews" asp-action="Index">Reviews</a></li>
-            <li><a asp-controller="Questions" asp-action="Index">Questions</a></li>
-            <li><a asp-controller="Media" asp-action="Index">Media</a></li>
-            <li><a asp-controller="Answers" asp-action="Index">Answers</a></li>
-        </ul>
-    </nav>
+<header>
+    <h1>Welcome to Places App!</h1>
+    <p>This is your central hub for managing the places system.</p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <p>Welcome, @User.Identity.Name!</p>
+    }
 </header>
+<nav class="navbar">
+    <ul class="nav-list">
+        <li><a asp-controller="Home" asp-action="Index" class="btn btn-info">Home</a></li>
+        <li><a asp-controller="Users" asp-action="Index" class="btn btn-info">Users</a></li>
+        <li><a asp-controller="Places" asp-action="Index" class="btn btn-info">Places</a></li>
+        <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info">Reviews</a></li>
+        <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info">Questions</a></li>
+        <li><a asp-controller="Media" asp-action="Index" class="btn btn-info">Media</a></li>
+        <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info">Answers</a></li>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li><a asp-controller="Users" asp-action="Logout" class="btn btn-secondary">Logout</a></li>
+        }
+        else
+        {
+            <li><a asp-controller="Users" asp-action="Login" class="btn btn-secondary">Login</a></li>
+            <li><a asp-controller="Users" asp-action="Register" class="btn btn-secondary">Register</a></li>
+        }
+    </ul>
+</nav>
 <main>
     @RenderBody()
 </main>
 <footer>
     <p>&copy; 2025 Places App</p>
 </footer>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@RenderSection("Scripts", required: false)
 </body>
 </html>
