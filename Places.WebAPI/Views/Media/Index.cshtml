@@ -1,0 +1,33 @@
+<h2>Media List</h2>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>File Path</th>
+        <th>Type</th>
+        <th>Place Id</th>
+        <th>User Id</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var media in Model)
+    {
+        <tr>
+            <td>@media.Id</td>
+            <td>@media.FilePath</td>
+            <td>@media.Type</td>
+            <td>@media.PlaceId</td>
+            <td>@media.UserId</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@media.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@media.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@media.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

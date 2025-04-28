@@ -1,5 +1,7 @@
 **/bin/
 **/obj/
+.idea
+**/lab4
 Places.DAL/Migrations/
 Places.WebAPI/places.db
 Places.WebAPI/places.db-shm

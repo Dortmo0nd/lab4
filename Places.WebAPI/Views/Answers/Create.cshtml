@@ -1,0 +1,29 @@
+@model Places.BLL.DTO.AnswerDTO
+
+@{
+    ViewData["Title"] = "Create Answer";
+}
+
+<h2>Create Answer</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Content" class="control-label">Content</label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="QuestionId" class="control-label">Question Id</label>
+        <input asp-for="QuestionId" class="form-control" type="number" />
+        <span asp-validation-for="QuestionId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="UserId" class="control-label">User Id</label>
+        <input asp-for="UserId" class="form-control" type="number" />
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+        <a asp-action="Index" class="btn">Back to List</a>
+    </div>
+</form>

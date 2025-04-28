@@ -20,6 +20,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PlacesDbContext>(options =>
     options.UseSqlite("Data Source=places.db").UseLazyLoadingProxies());
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -37,17 +47,7 @@ builder.Services.AddScoped<AnswerMapper>();
 
 var app = builder.Build();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
-app.UseCors("AllowFrontend");
+//app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {
@@ -55,24 +55,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSpa(spa =>
-{
-    spa.Options.SourcePath = "../Places.FrontEnd/src";
-    if (app.Environment.IsDevelopment())
-    {
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000"); // Зміна з 5215 на 3000
-    }
-});
-
 //app.UseHttpsRedirection();
-if (!app.Environment.IsDevelopment())
+/*if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
-}
-app.UseStaticFiles(); // Для статичних файлів (CSS, JS)
-app.UseRouting();
-app.UseAuthorization();
+}*/
 
+app.UseStaticFiles(); // Для статичних файлів (CSS, JS)
+app.UseAuthorization();
+app.UseDeveloperExceptionPage();
+
+app.UseRouting();
 // Налаштування маршруту за замовчуванням для MVC
 app.MapControllerRoute(
     name: "default",
