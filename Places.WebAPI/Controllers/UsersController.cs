@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Places.WebAPI.Controllers
 {
@@ -77,6 +80,54 @@ namespace Places.WebAPI.Controllers
         {
             _userService.DeleteUser(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginDTO model)
+        {
+            var user = _userService.GetUserById(model.UserId);
+            if (user != null && _userService.VerifyPassword(model.UserId, model.Password))
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Full_name),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                return RedirectToAction("Index", "Home");
+            }
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(model);
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(UserDTO user)
+        {
+            if (ModelState.IsValid)
+            {
+                _userService.AddUser(user);
+                return RedirectToAction("Login");
+            }
+            return View(user);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

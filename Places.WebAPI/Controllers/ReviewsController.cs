@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ReviewsController : ControllerBase
+    public class ReviewsController : Controller
     {
         private readonly IReviewService _reviewService;
 
@@ -15,40 +15,72 @@ namespace Places.WebAPI.Controllers
             _reviewService = reviewService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var review = _reviewService.GetReviewById(id);
-            return review != null ? Ok(review) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var reviews = _reviewService.GetAllReviews();
-            return Ok(reviews);
+            return View(reviews);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
+                return NotFound();
+            return View(review);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] ReviewDTO review)
+        [Authorize]
+        public IActionResult Create(ReviewDTO review)
         {
-            _reviewService.AddReview(review);
-            return CreatedAtAction(nameof(Get), new { id = review.Id }, review);
+            if (ModelState.IsValid)
+            {
+                review.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                _reviewService.AddReview(review);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(review);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] ReviewDTO review)
+        public IActionResult Edit(int id)
         {
-            if (id != review.Id) return BadRequest();
-            _reviewService.UpdateReview(review);
-            return NoContent();
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
+                return NotFound();
+            return View(review);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, ReviewDTO review)
+        {
+            if (id != review.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _reviewService.UpdateReview(review);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(review);
+        }
+
         public IActionResult Delete(int id)
         {
+            var review = _reviewService.GetReviewById(id);
+            if (review == null)
+                return NotFound();
+            return View(review);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
             _reviewService.DeleteReview(id);
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

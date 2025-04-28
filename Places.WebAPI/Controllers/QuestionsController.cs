@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class QuestionsController : ControllerBase
+    public class QuestionsController : Controller
     {
         private readonly IQuestionService _questionService;
 
@@ -15,40 +15,72 @@ namespace Places.WebAPI.Controllers
             _questionService = questionService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var question = _questionService.GetQuestionById(id);
-            return question != null ? Ok(question) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var questions = _questionService.GetAllQuestions();
-            return Ok(questions);
+            return View(questions);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
+                return NotFound();
+            return View(question);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] QuestionDTO question, [FromQuery] int userId)
+        [Authorize]
+        public IActionResult Create(QuestionDTO question)
         {
-            _questionService.AddQuestion(question, userId);
-            return CreatedAtAction(nameof(Get), new { id = question.Id }, question);
+            if (ModelState.IsValid)
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                _questionService.AddQuestion(question, userId);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(question);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] QuestionDTO question)
+        public IActionResult Edit(int id)
         {
-            if (id != question.Id) return BadRequest();
-            _questionService.UpdateQuestion(question);
-            return NoContent();
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
+                return NotFound();
+            return View(question);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, QuestionDTO question)
+        {
+            if (id != question.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _questionService.UpdateQuestion(question);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(question);
+        }
+
         public IActionResult Delete(int id)
         {
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
+                return NotFound();
+            return View(question);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
             _questionService.DeleteQuestion(id);
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -4,9 +4,7 @@ using Places.BLL.Interfaces;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PlacesController : ControllerBase
+    public class PlacesController : Controller
     {
         private readonly IPlaceService _placeService;
 
@@ -15,40 +13,70 @@ namespace Places.WebAPI.Controllers
             _placeService = placeService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var place = _placeService.GetPlaceById(id);
-            return place != null ? Ok(place) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var places = _placeService.GetAllPlaces();
-            return Ok(places);
+            return View(places);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+                return NotFound();
+            return View(place);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] PlaceDTO place)
+        public IActionResult Create(PlaceDTO place)
         {
-            _placeService.AddPlace(place);
-            return CreatedAtAction(nameof(Get), new { id = place.Id }, place);
+            if (ModelState.IsValid)
+            {
+                _placeService.AddPlace(place);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(place);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] PlaceDTO place)
+        public IActionResult Edit(int id)
         {
-            if (id != place.Id) return BadRequest();
-            _placeService.UpdatePlace(place);
-            return NoContent();
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+                return NotFound();
+            return View(place);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, PlaceDTO place)
+        {
+            if (id != place.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _placeService.UpdatePlace(place);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(place);
+        }
+
         public IActionResult Delete(int id)
         {
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+                return NotFound();
+            return View(place);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
             _placeService.DeletePlace(id);
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AnswersController : ControllerBase
+    public class AnswersController : Controller
     {
         private readonly IAnswerService _answerService;
 
@@ -15,40 +15,72 @@ namespace Places.WebAPI.Controllers
             _answerService = answerService;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var answer = _answerService.GetAnswerById(id);
-            return answer != null ? Ok(answer) : NotFound();
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
             var answers = _answerService.GetAllAnswers();
-            return Ok(answers);
+            return View(answers);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var answer = _answerService.GetAnswerById(id);
+            if (answer == null)
+                return NotFound();
+            return View(answer);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] AnswerDTO answer)
+        [Authorize]
+        public IActionResult Create(AnswerDTO answer)
         {
-            _answerService.AddAnswer(answer);
-            return CreatedAtAction(nameof(Get), new { id = answer.Id }, answer);
+            if (ModelState.IsValid)
+            {
+                answer.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                _answerService.AddAnswer(answer);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(answer);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] AnswerDTO answer)
+        public IActionResult Edit(int id)
         {
-            if (id != answer.Id) return BadRequest();
-            _answerService.UpdateAnswer(answer);
-            return NoContent();
+            var answer = _answerService.GetAnswerById(id);
+            if (answer == null)
+                return NotFound();
+            return View(answer);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost]
+        public IActionResult Edit(int id, AnswerDTO answer)
+        {
+            if (id != answer.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _answerService.UpdateAnswer(answer);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(answer);
+        }
+
         public IActionResult Delete(int id)
         {
+            var answer = _answerService.GetAnswerById(id);
+            if (answer == null)
+                return NotFound();
+            return View(answer);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
             _answerService.DeleteAnswer(id);
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
