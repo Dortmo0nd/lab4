@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Answers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Answers</h2>
@@ -28,8 +29,8 @@
             <td>@answer.QuestionId</td>
             <td>@answer.UserId</td>
             <td>
-                <a asp-action="Details" asp-route-id="@answer.Id">Details</a> |
-                <a asp-action="Edit" asp-route-id="@answer.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@answer.Id" class="btn btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@answer.Id" class="btn btn-primary">Edit</a>
                 <a asp-action="Delete" asp-route-id="@answer.Id" class="btn btn-danger">Delete</a>
             </td>
         </tr>

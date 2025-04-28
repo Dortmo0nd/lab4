@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Place Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Place Details</h2>
@@ -23,6 +24,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
