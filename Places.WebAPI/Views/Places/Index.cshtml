@@ -1,13 +1,9 @@
 @model IEnumerable<Places.BLL.DTO.PlaceDTO>
 
-@{
-    ViewData["Title"] = "Places";
-}
-
 <h2>Places</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -32,7 +28,7 @@
             <td>
                 <a asp-action="Details" asp-route-id="@place.Id">Details</a> |
                 <a asp-action="Edit" asp-route-id="@place.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@place.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Delete" asp-route-id="@place.Id">Delete</a>
             </td>
         </tr>
     }
