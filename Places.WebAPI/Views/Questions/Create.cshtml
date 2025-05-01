@@ -1,12 +1,6 @@
 @model Places.BLL.DTO.QuestionDTO
 
-@{
-    ViewData["Title"] = "Create Question";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
 <h2>Create Question</h2>
-
 <form asp-action="Create" method="post">
     <div class="form-group">
         <label asp-for="Content" class="control-label">Content</label>
@@ -14,12 +8,16 @@
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PlaceId" class="control-label">Place Id</label>
-        <input asp-for="PlaceId" class="form-control" />
-        <span asp-validation-for="PlaceId" class="text-danger"></span>
+        <label for="PlaceName" class="control-label">Place Name</label>
+        <select id="PlaceName" name="PlaceName" class="form-control">
+            @foreach (var place in ViewBag.Places)
+            {
+                <option value="@place.Name">@place.Name</option>
+            }
+        </select>
     </div>
     <div class="form-group">
         <input type="submit" value="Create" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary" href="~/Questions/Index">Back to List</a>
     </div>
 </form>

@@ -1,3 +1,5 @@
+@model Places.BLL.DTO.MediaDTO
+
 <h2>Create Media</h2>
 <form asp-action="Create" method="post">
     <div class="form-group">
@@ -11,17 +13,25 @@
         <span asp-validation-for="Type" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PlaceId" class="control-label">Place Id</label>
-        <input asp-for="PlaceId" class="form-control" />
-        <span asp-validation-for="PlaceId" class="text-danger"></span>
+        <label for="PlaceName" class="control-label">Place Name</label>
+        <select id="PlaceName" name="PlaceName" class="form-control">
+            @foreach (var place in ViewBag.Places)
+            {
+                <option value="@place.Name">@place.Name</option>
+            }
+        </select>
     </div>
     <div class="form-group">
-        <label asp-for="UserId" class="control-label">User Id</label>
-        <input asp-for="UserId" class="form-control" />
-        <span asp-validation-for="UserId" class="text-danger"></span>
+        <label for="UserName" class="control-label">User Name</label>
+        <select id="UserName" name="UserName" class="form-control">
+            @foreach (var user in ViewBag.Users)
+            {
+                <option value="@user.Full_name">@user.Full_name</option>
+            }
+        </select>
     </div>
     <div class="form-group">
         <input type="submit" value="Create" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary" href="~/Media/Index">Back to List</a>
     </div>
 </form>

@@ -90,18 +90,13 @@ namespace Places.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO model)
         {
-            var user = _userService.GetUserById(model.UserId);
-            if (user != null && _userService.VerifyPassword(model.UserId, model.Password))
+            var user = _userService.GetUserByUsername(model.Username);
+            if (user != null && _userService.VerifyPassword(user.Id, model.Password))
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Full_name),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
-                };
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Id.ToString()) };
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                await HttpContext.SignInAsync(principal);
                 return RedirectToAction("Index", "Home");
             }
             ModelState.AddModelError("", "Invalid login attempt.");

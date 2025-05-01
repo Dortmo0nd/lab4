@@ -10,5 +10,6 @@ namespace Places.BLL.Interfaces
         void AddPlace(PlaceDTO place);
         void UpdatePlace(PlaceDTO place);
         void DeletePlace(int id);
+        PlaceDTO GetPlaceByName(string name);
     }
 }

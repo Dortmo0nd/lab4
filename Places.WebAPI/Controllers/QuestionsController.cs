@@ -9,10 +9,12 @@ namespace Places.WebAPI.Controllers
     public class QuestionsController : Controller
     {
         private readonly IQuestionService _questionService;
+        private readonly IPlaceService _placeService; // Додаємо це
 
-        public QuestionsController(IQuestionService questionService)
+        public QuestionsController(IQuestionService questionService, IPlaceService placeService)
         {
             _questionService = questionService;
+            _placeService = placeService; // Ініціалізуємо
         }
 
         public IActionResult Index()
@@ -31,19 +33,22 @@ namespace Places.WebAPI.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.Places = _placeService.GetAllPlaces();
             return View();
         }
 
         [HttpPost]
-        [Authorize]
-        public IActionResult Create(QuestionDTO question)
+        public IActionResult Create(QuestionDTO question, string PlaceName)
         {
-            if (ModelState.IsValid)
+            var place = _placeService.GetPlaceByName(PlaceName);
+            if (place != null && ModelState.IsValid)
             {
-                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-                _questionService.AddQuestion(question, userId);
+                question.PlaceId = place.Id;
+                _questionService.AddQuestion(question, 1); // Припускаємо userId = 1
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Places = _placeService.GetAllPlaces();
+            ModelState.AddModelError("", "Місце не знайдене.");
             return View(question);
         }
 

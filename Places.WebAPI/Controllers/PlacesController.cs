@@ -38,6 +38,7 @@ namespace Places.WebAPI.Controllers
             if (ModelState.IsValid)
             {
                 _placeService.AddPlace(place);
+                TempData["SuccessMessage"] = "Place created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(place);

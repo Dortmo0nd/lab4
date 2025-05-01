@@ -9,10 +9,14 @@ namespace Places.WebAPI.Controllers
     public class MediaController : Controller
     {
         private readonly IMediaService _mediaService;
+        private readonly IPlaceService _placeService; // Додаємо це
+        private readonly IUserService _userService; // Додаємо це
 
-        public MediaController(IMediaService mediaService)
+        public MediaController(IMediaService mediaService, IPlaceService placeService, IUserService userService)
         {
             _mediaService = mediaService;
+            _placeService = placeService; // Ініціалізуємо
+            _userService = userService; // Ініціалізуємо
         }
 
         public IActionResult Index()
@@ -31,19 +35,26 @@ namespace Places.WebAPI.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.Places = _placeService.GetAllPlaces();
+            ViewBag.Users = _userService.GetAllUsers();
             return View();
         }
 
         [HttpPost]
-        [Authorize]
-        public IActionResult Create(MediaDTO media)
+        public IActionResult Create(MediaDTO media, string PlaceName, string UserName)
         {
-            if (ModelState.IsValid)
+            var place = _placeService.GetPlaceByName(PlaceName);
+            var user = _userService.GetUserByUsername(UserName);
+            if (place != null && user != null && ModelState.IsValid)
             {
-                media.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                media.PlaceId = place.Id;
+                media.UserId = user.Id;
                 _mediaService.AddMedia(media);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Places = _placeService.GetAllPlaces();
+            ViewBag.Users = _userService.GetAllUsers();
+            ModelState.AddModelError("", "Місце або користувач не знайдені.");
             return View(media);
         }
 

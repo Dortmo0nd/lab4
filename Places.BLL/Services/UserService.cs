@@ -72,5 +72,11 @@ namespace Places.BLL.Services
 
             return BCrypt.Net.BCrypt.Verify(password, user.Password);
         }
+        
+        public UserDTO GetUserByUsername(string username)
+        {
+            var user = _unitOfWork.UserRepository.Find(u => u.Full_name == username).FirstOrDefault();
+            return _mapper.ToDto(user);
+        }
     }
 }

@@ -1,10 +1,17 @@
 @model IEnumerable<Places.BLL.DTO.PlaceDTO>
 
+@{
+    ViewData["Title"] = "Places";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 <h2>Places</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary" href="~/Places/Create">Create New</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary" href="~/Home/Index">Back to Home</a>
 </p>
+
 <table class="table">
     <thead>
     <tr>
@@ -26,9 +33,9 @@
             <td>@place.Latitude</td>
             <td>@place.Longitude</td>
             <td>
-                <a asp-action="Details" asp-route-id="@place.Id">Details</a> |
-                <a asp-action="Edit" asp-route-id="@place.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@place.Id">Delete</a>
+                <a asp-action="Details" asp-route-id="@place.Id" class="btn btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@place.Id" class="btn btn-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@place.Id" class="btn btn-danger">Delete</a>
             </td>
         </tr>
     }

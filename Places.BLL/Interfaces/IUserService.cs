@@ -10,6 +10,7 @@ namespace Places.BLL.Interfaces
         void AddUser(UserDTO user);
         void UpdateUser(UserDTO user);
         void DeleteUser(int id);
+        UserDTO GetUserByUsername(string username);
         bool VerifyPassword(int userId, string password); // Новий метод
     }
 }

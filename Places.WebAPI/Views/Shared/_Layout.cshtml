@@ -23,21 +23,21 @@
 </header>
 <nav class="navbar">
     <ul class="nav-list">
-        <li><a asp-controller="Home" asp-action="Index" class="btn btn-info">Home</a></li>
-        <li><a asp-controller="Users" asp-action="Index" class="btn btn-info">Users</a></li>
-        <li><a asp-controller="Places" asp-action="Index" class="btn btn-info">Places</a></li>
-        <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info">Reviews</a></li>
-        <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info">Questions</a></li>
-        <li><a asp-controller="Media" asp-action="Index" class="btn btn-info">Media</a></li>
-        <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info">Answers</a></li>
+        <li><a asp-controller="Home" asp-action="Index" class="btn btn-info" href="~/Home/Index">Home</a></li>
+        <li><a asp-controller="Users" asp-action="Index" class="btn btn-info" href="~/Users/Index">Users</a></li>
+        <li><a asp-controller="Places" asp-action="Index" class="btn btn-info" href="~/Places/Index">Places</a></li>
+        <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info" href="~/Reviews/Index">Reviews</a></li>
+        <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info" href="~/Questions/Index">Questions</a></li>
+        <li><a asp-controller="Media" asp-action="Index" class="btn btn-info" href="~/Media/Index">Media</a></li>
+        <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info" href="~/Answers/Index">Answers</a></li>
         @if (User.Identity.IsAuthenticated)
         {
             <li><a asp-controller="Users" asp-action="Logout" class="btn btn-secondary">Logout</a></li>
         }
         else
         {
-            <li><a asp-controller="Users" asp-action="Login" class="btn btn-secondary">Login</a></li>
-            <li><a asp-controller="Users" asp-action="Register" class="btn btn-secondary">Register</a></li>
+            <li><a asp-controller="Users" asp-action="Login" class="btn btn-secondary" href="~/Users/Login">Login</a></li>
+            <li><a asp-controller="Users" asp-action="Register" class="btn btn-secondary" href="~/Users/Register">Register</a></li>
         }
     </ul>
 </nav>
