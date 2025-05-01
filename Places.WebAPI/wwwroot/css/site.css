@@ -39,3 +39,61 @@
 .btn-secondary:hover {
     background-color: #5a6268;
 }
+
+.user-index {
+    margin: 20px;
+}
+.user-index h2 {
+    color: #333;
+}
+.user-index table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.user-index th, .user-index td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-details {
+    margin: 20px;
+}
+.user-details h2 {
+    color: #333;
+}
+.user-details dl {
+    margin-top: 20px;
+}
+
+.places-index {
+    margin: 20px;
+}
+.places-index h2 {
+    color: #333;
+}
+.places-index table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.places-index th, .places-index td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.media-index {
+    margin: 20px;
+}
+.media-index h2 {
+    color: #333;
+}
+.media-index table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.media-index th, .media-index td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}

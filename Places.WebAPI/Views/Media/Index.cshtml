@@ -1,7 +1,16 @@
-<h2>Media List</h2>
+@model IEnumerable<Places.BLL.DTO.MediaDTO>
+
+@{
+    ViewData["Title"] = "Media";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Media</h2>
+
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary" href="~/Media/Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
     <tr>
@@ -23,8 +32,8 @@
             <td>@media.PlaceId</td>
             <td>@media.UserId</td>
             <td>
-                <a asp-action="Details" asp-route-id="@media.Id">Details</a> |
-                <a asp-action="Edit" asp-route-id="@media.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@media.Id" class="btn btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@media.Id" class="btn btn-primary">Edit</a>
                 <a asp-action="Delete" asp-route-id="@media.Id" class="btn btn-danger">Delete</a>
             </td>
         </tr>

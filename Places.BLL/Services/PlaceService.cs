@@ -61,5 +61,11 @@ namespace Places.BLL.Services
                 _unitOfWork.SaveChanges();
             }
         }
+        
+        public PlaceDTO GetPlaceByName(string name)
+        {
+            var place = _unitOfWork.PlaceRepository.Find(p => p.Name == name).FirstOrDefault();
+            return _mapper.ToDto(place);
+        }
     }
 }

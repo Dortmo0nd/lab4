@@ -33,6 +33,7 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 
+
 // Add Mappers
 builder.Services.AddScoped<PlaceMapper>();
 builder.Services.AddScoped<UserMapper>();

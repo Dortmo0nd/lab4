@@ -9,10 +9,14 @@ namespace Places.WebAPI.Controllers
     public class AnswersController : Controller
     {
         private readonly IAnswerService _answerService;
+        private readonly IQuestionService _questionService; // Додаємо це
+        private readonly IUserService _userService; // Додаємо це
 
-        public AnswersController(IAnswerService answerService)
+        public AnswersController(IAnswerService answerService, IQuestionService questionService, IUserService userService)
         {
             _answerService = answerService;
+            _questionService = questionService; // Ініціалізуємо
+            _userService = userService; // Ініціалізуємо
         }
 
         public IActionResult Index()
@@ -31,19 +35,26 @@ namespace Places.WebAPI.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.Questions = _questionService.GetAllQuestions();
+            ViewBag.Users = _userService.GetAllUsers();
             return View();
         }
 
         [HttpPost]
-        [Authorize]
-        public IActionResult Create(AnswerDTO answer)
+        public IActionResult Create(AnswerDTO answer, string QuestionContent, string UserName)
         {
-            if (ModelState.IsValid)
+            var question = _questionService.GetQuestionByContent(QuestionContent);
+            var user = _userService.GetUserByUsername(UserName);
+            if (question != null && user != null && ModelState.IsValid)
             {
-                answer.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                answer.QuestionId = question.Id;
+                answer.UserId = user.Id;
                 _answerService.AddAnswer(answer);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Questions = _questionService.GetAllQuestions();
+            ViewBag.Users = _userService.GetAllUsers();
+            ModelState.AddModelError("", "Питання або користувач не знайдені.");
             return View(answer);
         }
 
