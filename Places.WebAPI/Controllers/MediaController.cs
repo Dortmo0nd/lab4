@@ -1,22 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
     public class MediaController : Controller
     {
         private readonly IMediaService _mediaService;
-        private readonly IPlaceService _placeService; // Додаємо це
-        private readonly IUserService _userService; // Додаємо це
+        private readonly IPlaceService _placeService;
+        private readonly IUserService _userService;
 
         public MediaController(IMediaService mediaService, IPlaceService placeService, IUserService userService)
         {
             _mediaService = mediaService;
-            _placeService = placeService; // Ініціалізуємо
-            _userService = userService; // Ініціалізуємо
+            _placeService = placeService;
+            _userService = userService;
         }
 
         public IActionResult Index()

@@ -1,30 +1,41 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Places.DAL.Repositories; // Adjust namespaces as needed
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Places.Abstract;
 using Places.BLL.Interfaces;
 using Places.BLL.Mappers;
 using Places.BLL.Services;
-using Places.Abstract;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Places.DAL.Repositories;
+using Places.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Register Services (BEFORE builder.Build())
-builder.Services.AddControllersWithViews();
+// Додаємо підтримку контролерів із Views
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Add Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// Налаштування DbContext
+builder.Services.AddDbContext<PlacesDbContext>(options =>
+    options.UseSqlite("Data Source=places.db").UseLazyLoadingProxies());
+
+// Налаштування CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        options.LoginPath = "/Users/Login";
-        options.LogoutPath = "/Users/Logout";
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
+});
 
-// Add DbContext
-builder.Services.AddDbContext<PlacesDbContext>(options => 
-    options.UseSqlite("Data Source=places.db"));
-
-// Add UnitOfWork and Services
+// Реєстрація сервісів
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -33,8 +44,7 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 
-
-// Add Mappers
+// Реєстрація маперів
 builder.Services.AddScoped<PlaceMapper>();
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ReviewMapper>();
@@ -42,14 +52,9 @@ builder.Services.AddScoped<QuestionMapper>();
 builder.Services.AddScoped<MediaMapper>();
 builder.Services.AddScoped<AnswerMapper>();
 
-// Add other services
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// 2. Build the Application
 var app = builder.Build();
 
-// 3. Configure Middleware (AFTER builder.Build())
+// Налаштування middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -58,9 +63,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication();
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
 
+// Налаштування маршрутів
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

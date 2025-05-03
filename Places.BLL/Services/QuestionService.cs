@@ -65,7 +65,7 @@ namespace Places.BLL.Services
                 _unitOfWork.SaveChanges();
             }
         }
-        
+
         public QuestionDTO GetQuestionByContent(string content)
         {
             var question = _unitOfWork.QuestionRepository.Find(q => q.Content == content).FirstOrDefault();
