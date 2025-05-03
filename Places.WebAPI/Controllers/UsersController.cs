@@ -90,16 +90,27 @@ namespace Places.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var user = _userService.GetUserByUsername(model.Username);
             if (user != null && _userService.VerifyPassword(user.Id, model.Password))
             {
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Id.ToString()) };
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Full_name),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                };
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync(principal);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
                 return RedirectToAction("Index", "Home");
             }
-            ModelState.AddModelError("", "Invalid login attempt.");
+
+            ModelState.AddModelError("", "Невірне ім’я користувача або пароль.");
             return View(model);
         }
 

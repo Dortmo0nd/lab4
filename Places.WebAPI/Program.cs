@@ -9,6 +9,7 @@ using Places.BLL.Mappers;
 using Places.BLL.Services;
 using Places.DAL.Repositories;
 using Places.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,15 @@ builder.Services.AddSwaggerGen();
 // Налаштування DbContext
 builder.Services.AddDbContext<PlacesDbContext>(options =>
     options.UseSqlite("Data Source=places.db").UseLazyLoadingProxies());
+
+// Налаштування аутентифікації з використанням cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Users/Login";
+        options.LogoutPath = "/Users/Logout";
+        options.AccessDeniedPath = "/Users/AccessDenied";
+    });
 
 // Налаштування CORS
 builder.Services.AddCors(options =>
@@ -64,6 +74,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowFrontend");
+app.UseAuthentication(); // Додано для аутентифікації
 app.UseAuthorization();
 
 // Налаштування маршрутів
