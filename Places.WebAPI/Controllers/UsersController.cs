@@ -4,6 +4,7 @@ using Places.BLL.Interfaces;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Places.WebAPI.Controllers
 {
@@ -16,12 +17,14 @@ namespace Places.WebAPI.Controllers
             _userService = userService;
         }
 
+        // GET: Users
         public IActionResult Index()
         {
             var users = _userService.GetAllUsers();
             return View(users);
         }
 
+        // GET: Users/Details/5
         public IActionResult Details(int id)
         {
             var user = _userService.GetUserById(id);
@@ -30,12 +33,15 @@ namespace Places.WebAPI.Controllers
             return View(user);
         }
 
+        // GET: Users/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Users/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(UserDTO user)
         {
             if (ModelState.IsValid)
@@ -46,6 +52,7 @@ namespace Places.WebAPI.Controllers
             return View(user);
         }
 
+        // GET: Users/Edit/5
         public IActionResult Edit(int id)
         {
             var user = _userService.GetUserById(id);
@@ -54,7 +61,9 @@ namespace Places.WebAPI.Controllers
             return View(user);
         }
 
+        // POST: Users/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, UserDTO user)
         {
             if (id != user.Id)
@@ -67,6 +76,7 @@ namespace Places.WebAPI.Controllers
             return View(user);
         }
 
+        // GET: Users/Delete/5
         public IActionResult Delete(int id)
         {
             var user = _userService.GetUserById(id);
@@ -75,19 +85,24 @@ namespace Places.WebAPI.Controllers
             return View(user);
         }
 
+        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             _userService.DeleteUser(id);
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Users/Login
         public IActionResult Login()
         {
             return View();
         }
 
+        // POST: Users/Login
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDTO model)
         {
             if (!ModelState.IsValid)
@@ -114,22 +129,45 @@ namespace Places.WebAPI.Controllers
             return View(model);
         }
 
+        // GET: Users/Register
         public IActionResult Register()
         {
             return View();
         }
 
+        // POST: Users/Register
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(UserDTO user)
         {
+            Console.WriteLine($"Received: Full_name={user.Full_name}, Role={user.Role}, Password={user.Password}");
+
             if (ModelState.IsValid)
             {
-                _userService.AddUser(user);
-                return RedirectToAction("Login");
+                try
+                {
+                    _userService.AddUser(user);
+                    Console.WriteLine("User registration attempted: " + user.Full_name);
+                    return RedirectToAction("Login");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Помилка при додаванні користувача: " + ex.Message);
+                }
+            }
+            else
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine("ModelState Error: " + error.ErrorMessage);
+                }
             }
             return View(user);
         }
 
+        // POST: Users/Logout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();

@@ -74,10 +74,8 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowFrontend");
-app.UseAuthentication(); // Додано для аутентифікації
+app.UseAuthentication();
 app.UseAuthorization();
-
-// Налаштування маршрутів
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

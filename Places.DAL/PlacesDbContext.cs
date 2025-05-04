@@ -9,11 +9,11 @@ namespace Places.DAL.Repositories
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
+            /*if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlite("Data Source=D:\\Rider_project\\Places\\Places.WebAPI\\places.db")
                     .UseLazyLoadingProxies();
-            }
+            }*/
         }
         
         public DbSet<Place> Places { get; set; }

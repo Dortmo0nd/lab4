@@ -22,7 +22,7 @@ namespace Places.BLL.Mappers
             if (userDto == null) return null;
             return new User
             {
-                Id = userDto.Id,
+                Id = 0, // Для нових користувачів завжди 0
                 Full_name = userDto.Full_name,
                 Role = userDto.Role,
                 Password = userDto.Password
