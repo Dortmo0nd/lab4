@@ -38,10 +38,14 @@ namespace Places.BLL.Services
             if (userDto == null || string.IsNullOrEmpty(userDto.Password))
                 throw new ArgumentException("Invalid user data");
 
+            Console.WriteLine($"Adding user: {userDto.Full_name}, Role: {userDto.Role}");
+            Console.WriteLine($"Received UserDTO: Id={userDto.Id}, Name={userDto.Full_name}, Role={userDto.Role}, Password={userDto.Password}");
             var user = _mapper.ToEntity(userDto);
+            Console.WriteLine($"Mapped User: Id={user.Id}, Name={user.Full_name}, Role={user.Role}");
             user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
             _unitOfWork.UserRepository.Add(user);
             _unitOfWork.SaveChanges();
+            Console.WriteLine("User saved with Id: " + user.Id);
         }
 
         public void UpdateUser(UserDTO userDto)

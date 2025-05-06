@@ -58,7 +58,8 @@ namespace Places.DAL.Repositories
 
         public void SaveChanges()
         {
-            _context.SaveChanges();
+            int affectedRows = _context.SaveChanges();
+            Console.WriteLine($"SaveChanges completed, affected rows: {affectedRows}");
         }
 
         public void Dispose()

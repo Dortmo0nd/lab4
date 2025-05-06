@@ -10,13 +10,14 @@ using Places.BLL.Services;
 using Places.DAL.Repositories;
 using Places.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Додаємо підтримку контролерів із Views
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,7 +31,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Users/Login";
-        options.LogoutPath = "/Users/Logout";
         options.AccessDeniedPath = "/Users/AccessDenied";
     });
 
@@ -62,6 +62,9 @@ builder.Services.AddScoped<QuestionMapper>();
 builder.Services.AddScoped<MediaMapper>();
 builder.Services.AddScoped<AnswerMapper>();
 
+// Додаємо підтримку Razor Pages (якщо потрібно)
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 // Налаштування middleware
@@ -74,12 +77,15 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowFrontend");
-app.UseAuthentication(); // Додано для аутентифікації
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Налаштування маршрутів
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Додаємо підтримку Razor Pages (якщо потрібно)
+app.MapRazorPages();
 
 app.Run();
