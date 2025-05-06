@@ -5,16 +5,21 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Places.WebAPI.Controllers
 {
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         // GET: Users
@@ -105,8 +110,11 @@ namespace Places.WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDTO model)
         {
+            _logger.LogInformation("Спроба логіну для користувача: {Username}", model.Username);
+
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Невалідний стан моделі при спробі логіну.");
                 return View(model);
             }
 
@@ -140,26 +148,16 @@ namespace Places.WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(UserDTO user)
         {
-            Console.WriteLine($"Received: Full_name={user.Full_name}, Role={user.Role}, Password={user.Password}");
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _userService.AddUser(user);
-                    Console.WriteLine("User registration attempted: " + user.Full_name);
                     return RedirectToAction("Login");
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "Помилка при додаванні користувача: " + ex.Message);
-                }
-            }
-            else
-            {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine("ModelState Error: " + error.ErrorMessage);
                 }
             }
             return View(user);
