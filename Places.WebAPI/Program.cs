@@ -14,7 +14,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Додаємо підтримку контролерів із Views
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -22,30 +21,16 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Налаштування DbContext
 builder.Services.AddDbContext<PlacesDbContext>(options =>
     options.UseSqlite("Data Source=places.db").UseLazyLoadingProxies());
 
-// Налаштування аутентифікації з використанням cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Users/Login";
-        options.AccessDeniedPath = "/Users/AccessDenied";
+        options.LoginPath = "/Auth/Index";
+        //options.AccessDeniedPath = "/Users/AccessDenied";
     });
 
-// Налаштування CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
-// Реєстрація сервісів
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -54,7 +39,6 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 
-// Реєстрація маперів
 builder.Services.AddScoped<PlaceMapper>();
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ReviewMapper>();
@@ -62,12 +46,10 @@ builder.Services.AddScoped<QuestionMapper>();
 builder.Services.AddScoped<MediaMapper>();
 builder.Services.AddScoped<AnswerMapper>();
 
-// Додаємо підтримку Razor Pages (якщо потрібно)
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// Налаштування middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -76,16 +58,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Налаштування маршрутів
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Index}/{id?}");
 
-// Додаємо підтримку Razor Pages (якщо потрібно)
 app.MapRazorPages();
 
 app.Run();
