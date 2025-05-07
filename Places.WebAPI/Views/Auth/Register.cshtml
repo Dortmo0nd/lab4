@@ -1,0 +1,22 @@
+@model Places.BLL.DTO.UserDTO
+
+<h2>Register</h2>
+<form asp-action="Register" method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="Full_name">Full Name</label>
+        <input asp-for="Full_name" name="Full_name" class="form-control" />
+    </div>
+    <div>
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" name="Password" class="form-control" type="password" />
+    </div>
+    <div>
+        <label asp-for="Role">Role</label>
+        <select asp-for="Role" name="Role" class="form-control">
+            <option value="Visitor">Visitor</option>
+            <option value="Admin">Admin</option>
+        </select>
+    </div>
+    <button type="submit">Register</button>
+</form>

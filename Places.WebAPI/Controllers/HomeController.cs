@@ -6,6 +6,10 @@ namespace Places.WebAPI.Controllers
     {
         public IActionResult Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Users");
+            }
             return View();
         }
     }
