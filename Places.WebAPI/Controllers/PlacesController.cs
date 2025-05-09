@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using System.Linq;
 
 namespace Places.WebAPI.Controllers
 {
@@ -13,12 +14,14 @@ namespace Places.WebAPI.Controllers
             _placeService = placeService;
         }
 
+        // GET: Places
         public IActionResult Index()
         {
             var places = _placeService.GetAllPlaces();
             return View(places);
         }
 
+        // GET: Places/Details/5
         public IActionResult Details(int id)
         {
             var place = _placeService.GetPlaceById(id);
@@ -27,23 +30,26 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
+        // GET: Places/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Places/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(PlaceDTO place)
         {
             if (ModelState.IsValid)
             {
                 _placeService.AddPlace(place);
-                TempData["SuccessMessage"] = "Place created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(place);
         }
 
+        // GET: Places/Edit/5
         public IActionResult Edit(int id)
         {
             var place = _placeService.GetPlaceById(id);
@@ -52,7 +58,9 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
+        // POST: Places/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, PlaceDTO place)
         {
             if (id != place.Id)
@@ -65,6 +73,7 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
+        // GET: Places/Delete/5
         public IActionResult Delete(int id)
         {
             var place = _placeService.GetPlaceById(id);
@@ -73,7 +82,9 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
+        // POST: Places/Delete/5
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             _placeService.DeletePlace(id);
