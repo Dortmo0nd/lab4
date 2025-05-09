@@ -1,34 +1,32 @@
 @model Places.BLL.DTO.PlaceDTO
 
-@{
-    ViewData["Title"] = "Create Place";
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="text-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
 }
 
-<h2>Create Place</h2>
+@{
+    ViewData["Title"] = "Create Place";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="Name" class="control-label">Name</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Description" class="control-label">Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Latitude" class="control-label">Latitude</label>
-        <input asp-for="Latitude" class="form-control" type="number" step="0.000001" />
-        <span asp-validation-for="Latitude" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Longitude" class="control-label">Longitude</label>
-        <input asp-for="Longitude" class="form-control" type="number" step="0.000001" />
-        <span asp-validation-for="Longitude" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-        <a asp-action="Index" class="btn" href="~/Places/Index">Back to List</a>
-    </div>
+<form action="/Places/Create" method="post">
+    <label for="Name">Ім'я:</label>
+    <input name="Name" id="Name" type="text" />
+    <br/>
+    <label for="Description">Опис:</label>
+    <input name="Description" id="Description" type="text" />
+    <br/>
+    <label for="Latitude">Широта:</label>
+    <input name="Latitude" id="Latitude" type="text" />
+    <br/>
+    <label for="Longitude">Довгота:</label>
+    <input name="Longitude" id="Longitude" type="text" />
+    <br/>
+    <button type="submit">Create</button>
 </form>

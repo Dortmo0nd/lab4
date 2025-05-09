@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Places App</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .navbar { margin-bottom: 20px; }
@@ -12,6 +14,7 @@
         .nav-list li { display: inline; }
     </style>
 </head>
+
 <body>
 <header>
     <h1>Ласкаво просимо до Places App!</h1>
@@ -34,6 +37,7 @@
                 <li><a asp-controller="Questions" asp-action="Create" class="btn btn-info" href="~/Questions/Create">Додати питання</a></li>
                 <li><a asp-controller="Users" asp-action="Index" class="btn btn-info" href="~/Users/Index">Користувачі</a></li>
             }
+
             <li><a asp-controller="Media" asp-action="Index" class="btn btn-info" href="~/Media/Index">Медіа</a></li>
             <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info" href="~/Answers/Index">Відповіді</a></li>
             <li><a asp-controller="Auth" asp-action="Logout" class="btn btn-secondary" href="~/Auth/Index">Вийти</a></li>
@@ -45,16 +49,14 @@
         }
     </ul>
 </nav>
+
 <main>
     @RenderBody()
 </main>
+
 <footer>
     <p>© 2025 Places App</p>
 </footer>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>
