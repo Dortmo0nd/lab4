@@ -1,4 +1,5 @@
 @model IEnumerable<Places.BLL.DTO.PlaceDTO>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Places";
@@ -8,8 +9,8 @@
 <h2>Places</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary" href="~/Places/Create">Create New</a>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary" href="~/Home/Index">Back to Home</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
 </p>
 
 <table class="table">
