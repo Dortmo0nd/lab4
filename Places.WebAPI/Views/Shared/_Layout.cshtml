@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html lang="uk">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,49 +12,52 @@
         .nav-list li { display: inline; }
     </style>
 </head>
-
 <body>
-<header>
-    <h1>Ласкаво просимо до Places App!</h1>
-    <p>Досліджуйте та керуйте визначними місцями.</p>
-    @if (User.Identity.IsAuthenticated)
-    {
-        <p>Вітаємо, @User.Identity.Name!</p>
-    }
-</header>
-<nav class="navbar">
-    <ul class="nav-list">
+    <header>
+        <h1>Ласкаво просимо до Places App!</h1>
+        <p>Досліджуйте та керуйте визначними місцями.</p>
         @if (User.Identity.IsAuthenticated)
         {
-            <li><a asp-controller="Home" asp-action="Index" class="btn btn-info" href="~/Home/Index">Головна</a></li>
-            <li><a asp-controller="Places" asp-action="Index" class="btn btn-info" href="~/Places/Index">Місця</a></li>
-            <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info" href="~/Reviews/Index">Відгуки</a></li>
-            <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info" href="~/Questions/Index">Питання</a></li>
-            @if (User.IsInRole("Admin"))
+            <p>Вітаємо, @User.Identity.Name!</p>
+        }
+    </header>
+    <nav class="navbar">
+        <ul class="nav-list">
+            @if (User.Identity.IsAuthenticated)
             {
-                <li><a asp-controller="Questions" asp-action="Create" class="btn btn-info" href="~/Questions/Create">Додати питання</a></li>
-                <li><a asp-controller="Users" asp-action="Index" class="btn btn-info" href="~/Users/Index">Користувачі</a></li>
+                <li><a asp-controller="Home" asp-action="Index" class="btn btn-info" href="~/Home/Index">Головна</a></li>
+                <li><a asp-controller="Places" asp-action="Index" class="btn btn-info" href="~/Places/Index">Місця</a></li>
+                <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info" href="~/Reviews/Index">Відгуки</a></li>
+                <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info" href="~/Questions/Index">Питання</a></li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li><a asp-controller="Questions" asp-action="Create" class="btn btn-info" href="~/Questions/Create">Додати питання</a></li>
+                    <li><a asp-controller="Users" asp-action="Index" class="btn btn-info" href="~/Users/Index">Користувачі</a></li>
+                }
+                <li><a asp-controller="Media" asp-action="Index" class="btn btn-info" href="~/Media/Index">Медіа</a></li>
+                <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info" href="~/Answers/Index">Відповіді</a></li>
+                <li><a asp-controller="Auth" asp-action="Logout" class="btn btn-secondary" href="~/Auth/Index">Вийти</a></li>
             }
+            else
+            {
+                <li><a asp-controller="Auth" asp-action="Login" class="btn btn-secondary">Увійти</a></li>
+                <li><a asp-controller="Auth" asp-action="Register" class="btn btn-secondary">Зареєструватися</a></li>
+            }
+        </ul>
+    </nav>
 
-            <li><a asp-controller="Media" asp-action="Index" class="btn btn-info" href="~/Media/Index">Медіа</a></li>
-            <li><a asp-controller="Answers" asp-action="Index" class="btn btn-info" href="~/Answers/Index">Відповіді</a></li>
-            <li><a asp-controller="Auth" asp-action="Logout" class="btn btn-secondary" href="~/Auth/Index">Вийти</a></li>
-        }
-        else
-        {
-            <li><a asp-controller="Auth" asp-action="Login" class="btn btn-secondary">Увійти</a></li>
-            <li><a asp-controller="Auth" asp-action="Register" class="btn btn-secondary">Зареєструватися</a></li>
-        }
-    </ul>
-</nav>
+    <main>
+        @RenderBody()
+    </main>
 
-<main>
-    @RenderBody()
-</main>
+    <footer>
+        <p>© 2025 Places App</p>
+    </footer>
 
-<footer>
-    <p>© 2025 Places App</p>
-</footer>
-@RenderSection("Scripts", required: false)
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
