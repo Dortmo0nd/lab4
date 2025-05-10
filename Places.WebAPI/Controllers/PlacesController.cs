@@ -39,14 +39,14 @@ namespace Places.WebAPI.Controllers
         // POST: Places/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(PlaceDTO place)
+        public IActionResult Create(PlaceDTO placeDto)
         {
             if (ModelState.IsValid)
             {
-                _placeService.AddPlace(place);
-                return RedirectToAction(nameof(Index));
+                _placeService.AddPlace(placeDto);
+                return RedirectToAction("Index");
             }
-            return View(place);
+            return View(placeDto);
         }
 
         // GET: Places/Edit/5
