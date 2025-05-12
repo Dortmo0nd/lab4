@@ -1,158 +1,103 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 
-public class MediaController : Controller
+namespace Places.WebAPI.Controllers
 {
-    private readonly IMediaService _mediaService;
-    private readonly IPlaceService _placeService;
-    private readonly IUserService _userService;
-
-    public MediaController(IMediaService mediaService, IPlaceService placeService, IUserService userService)
+    public class MediaController : Controller
     {
-        _mediaService = mediaService;
-        _placeService = placeService;
-        _userService = userService;
-    }
+        private readonly IMediaService _mediaService;
+        private readonly IPlaceService _placeService;
+        private readonly IUserService _userService;
 
-    public IActionResult Index()
-    {
-        var mediaList = _mediaService.GetAllMedia();
-        return View(mediaList);
-    }
-
-    public IActionResult Details(int id)
-    {
-        var media = _mediaService.GetMediaById(id);
-        if (media == null)
+        public MediaController(IMediaService mediaService, IPlaceService placeService, IUserService userService)
         {
-            return NotFound();
-        }
-        return View(media);
-    }
-
-    public IActionResult Create(int? placeId)
-    {
-        ViewBag.Places = _placeService.GetAllPlaces();
-        return View(new MediaDTO { PlaceId = placeId });
-    }
-
-    [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MediaDTO mediaDTO, IFormFile file)
-        {
-            // Перевірка наявності файлу
-            if (file == null || file.Length == 0)
-            {
-                ModelState.AddModelError("file", "Будь ласка, виберіть файл.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка типу файлу
-            var allowedImageTypes = new[] { "image/jpeg", "image/png", "image/gif" };
-            if (!allowedImageTypes.Contains(file.ContentType) && mediaDTO.Type == "Фото")
-            {
-                ModelState.AddModelError("file", "Дозволені лише файли у форматах JPEG, PNG або GIF для фото.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка розміру файлу (максимум 5 МБ)
-            const long maxFileSize = 5 * 1024 * 1024; // 5 MB
-            if (file.Length > maxFileSize)
-            {
-                ModelState.AddModelError("file", "Розмір файлу перевищує 5 МБ.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка типу медіа
-            if (string.IsNullOrEmpty(mediaDTO.Type))
-            {
-                ModelState.AddModelError("Type", "Будь ласка, виберіть тип медіа.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Визначаємо шлях для збереження файлу
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            // Унікальне ім’я файлу
-            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            try
-            {
-                // Зберігаємо файл
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-
-                // Заповнюємо DTO
-                mediaDTO.FilePath = $"/uploads/{uniqueFileName}";
-                mediaDTO.UserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value); // Отримуємо ID користувача
-
-                // Додаємо медіа через сервіс
-                _mediaService.AddMedia(mediaDTO);
-            }
-            catch (Exception ex)
-            {
-                // Логування помилки (можна використати ILogger)
-                ModelState.AddModelError("", $"Помилка при збереженні файлу: {ex.Message}");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            return RedirectToAction("Details", "Places", new { id = mediaDTO.PlaceId });
+            _mediaService = mediaService;
+            _placeService = placeService;
+            _userService = userService;
         }
 
-    public IActionResult Edit(int id)
-    {
-        var media = _mediaService.GetMediaById(id);
-        if (media == null)
+        public IActionResult Index()
         {
-            return NotFound();
+            var mediaFiles = _mediaService.GetAllMedia();
+            var places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
+            var users = _userService.GetAllUsers().ToDictionary(u => u.Id, u => u.Full_name);
+            ViewBag.Places = places;
+            ViewBag.Users = users;
+            return View(mediaFiles);
         }
-        ViewBag.Places = _placeService.GetAllPlaces();
-        return View(media);
-    }
 
-    [HttpPost]
-    public IActionResult Edit(MediaDTO mediaDto)
-    {
-        if (ModelState.IsValid)
+        public IActionResult Details(int id)
         {
-            _mediaService.UpdateMedia(mediaDto);
-            return RedirectToAction("Index");
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            var placeName = media.PlaceId.HasValue ? _placeService.GetPlaceById(media.PlaceId.Value)?.Name ?? "Немає" : "Немає";
+            var userName = media.UserId.HasValue ? _userService.GetUserById(media.UserId.Value)?.Full_name ?? "Немає" : "Немає";
+            ViewBag.PlaceName = placeName;
+            ViewBag.UserName = userName;
+            return View(media);
         }
-        ViewBag.Places = _placeService.GetAllPlaces();
-        return View(mediaDto);
-    }
 
-    public IActionResult Delete(int id)
-    {
-        var media = _mediaService.GetMediaById(id);
-        if (media == null)
+        public IActionResult Create()
         {
-            return NotFound();
+            ViewBag.Places = _placeService.GetAllPlaces();
+            ViewBag.Users = _userService.GetAllUsers();
+            return View();
         }
-        return View(media);
-    }
 
-    [HttpPost, ActionName("Delete")]
-    public IActionResult DeleteConfirmed(int id)
-    {
-        _mediaService.DeleteMedia(id);
-        return RedirectToAction("Index");
+        [HttpPost]
+        public IActionResult Create(MediaDTO media, string PlaceName, string UserName)
+        {
+            var place = _placeService.GetPlaceByName(PlaceName);
+            var user = _userService.GetUserByUsername(UserName);
+            if (place != null && user != null && ModelState.IsValid)
+            {
+                media.PlaceId = place.Id;
+                media.UserId = user.Id;
+                _mediaService.AddMedia(media);
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.Places = _placeService.GetAllPlaces();
+            ViewBag.Users = _userService.GetAllUsers();
+            ModelState.AddModelError("", "Місце або користувач не знайдені.");
+            return View(media);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            return View(media);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(int id, MediaDTO media)
+        {
+            if (id != media.Id)
+                return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _mediaService.UpdateMedia(media);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(media);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+                return NotFound();
+            return View(media);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _mediaService.DeleteMedia(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
