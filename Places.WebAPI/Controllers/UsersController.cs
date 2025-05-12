@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Places.WebAPI.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
@@ -91,12 +92,12 @@ namespace Places.WebAPI.Controllers
         }
 
         // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             _userService.DeleteUser(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
 
         // GET: Users/Login
