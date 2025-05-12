@@ -1,32 +1,30 @@
 @model Places.BLL.DTO.AnswerDTO
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Створити відповідь";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<h2>Create Answer</h2>
+<h2>Створити нову відповідь</h2>
+
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="Content" class="control-label">Content</label>
+        <label asp-for="Content">Зміст</label>
         <textarea asp-for="Content" class="form-control"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="QuestionContent" class="control-label">Question</label>
-        <select id="QuestionContent" name="QuestionContent" class="form-control">
+        <label for="QuestionId">Питання</label>
+        <select id="QuestionId" name="QuestionId" class="form-control">
             @foreach (var question in ViewBag.Questions)
             {
-                <option value="@question.Content">@question.Content</option>
+                <option value="@question.Id">@question.Content</option>
             }
         </select>
     </div>
-    <div class="form-group">
-        <label for="UserName" class="control-label">User</label>
-        <select id="UserName" name="UserName" class="form-control">
-            @foreach (var user in ViewBag.Users)
-            {
-                <option value="@user.Full_name">@user.Full_name</option>
-            }
-        </select>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary" href="~/Answers/Index">Back to List</a>
-    </div>
+    @Html.AntiForgeryToken()
+    <input type="submit" value="Створити" class="btn btn-primary" />
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

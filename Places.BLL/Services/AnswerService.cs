@@ -34,12 +34,14 @@ namespace Places.BLL.Services
 
         public void AddAnswer(AnswerDTO answerDto)
         {
+            Console.WriteLine("Adding answer: " + answerDto.Content);
             if (answerDto == null || string.IsNullOrEmpty(answerDto.Content) || answerDto.QuestionId <= 0 || answerDto.UserId <= 0)
                 throw new ArgumentException("Invalid answer data");
 
             var answer = _mapper.ToEntity(answerDto);
             _unitOfWork.AnswerRepository.Add(answer);
             _unitOfWork.SaveChanges();
+            Console.WriteLine("Answer saved to database");
         }
 
         public void UpdateAnswer(AnswerDTO answerDto)

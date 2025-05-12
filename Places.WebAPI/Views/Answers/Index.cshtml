@@ -1,23 +1,24 @@
 @model IEnumerable<Places.BLL.DTO.AnswerDTO>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Answers";
+    ViewData["Title"] = "Відповіді";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Answers</h2>
+<h2>Відповіді</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary" href="~/Answers/Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Створити нову</a>
 </p>
 <table class="table">
     <thead>
     <tr>
         <th>Id</th>
-        <th>Content</th>
-        <th>Question Id</th>
-        <th>User Id</th>
-        <th>Actions</th>
+        <th>Зміст</th>
+        <th>Питання (Id)</th>
+        <th>Користувач (Id)</th>
+        <th>Дії</th>
     </tr>
     </thead>
     <tbody>
@@ -29,9 +30,9 @@
             <td>@answer.QuestionId</td>
             <td>@answer.UserId</td>
             <td>
-                <a asp-action="Details" asp-route-id="@answer.Id" class="btn btn-info">Details</a>
-                <a asp-action="Edit" asp-route-id="@answer.Id" class="btn btn-primary">Edit</a>
-                <a asp-action="Delete" asp-route-id="@answer.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Details" asp-route-id="@answer.Id" class="btn btn-info">Деталі</a>
+                <a asp-action="Edit" asp-route-id="@answer.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-action="Delete" asp-route-id="@answer.Id" class="btn btn-danger">Видалити</a>
             </td>
         </tr>
     }
