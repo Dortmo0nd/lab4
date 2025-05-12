@@ -1,31 +1,31 @@
 @model Places.BLL.DTO.ReviewDTO
-
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Edit Review";
+    ViewData["Title"] = "Редагувати відгук";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit Review</h2>
+<h2>Редагувати відгук</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
-        <label asp-for="Content" class="control-label">Content</label>
-        <input asp-for="Content" class="form-control" />
+        <label asp-for="Content" class="control-label">Зміст</label>
+        <textarea asp-for="Content" class="form-control"></textarea>
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PlaceId" class="control-label">Place Id</label>
-        <input asp-for="PlaceId" class="form-control" />
+        <label for="PlaceId" class="control-label">Місце</label>
+        <select asp-for="PlaceId" class="form-control">
+            @foreach (var place in ViewBag.Places)
+            {
+                <option value="@place.Id" selected="@(place.Id == Model.PlaceId ? "selected" : "")">@place.Name</option>
+            }
+        </select>
         <span asp-validation-for="PlaceId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="UserId" class="control-label">User Id</label>
-        <input asp-for="UserId" class="form-control" />
-        <span asp-validation-for="UserId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <input type="submit" value="Зберегти" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
     </div>
 </form>

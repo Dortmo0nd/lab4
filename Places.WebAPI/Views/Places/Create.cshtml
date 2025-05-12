@@ -1,4 +1,5 @@
 @model Places.BLL.DTO.PlaceDTO
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @if (!ViewData.ModelState.IsValid)
 {
@@ -16,6 +17,7 @@
 }
 
 <form action="/Places/Create" method="post">
+    @Html.AntiForgeryToken()
     <label for="Name">Ім'я:</label>
     <input name="Name" id="Name" type="text" />
     <br/>

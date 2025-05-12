@@ -11,5 +11,6 @@ namespace Places.BLL.Interfaces
         void UpdateQuestion(QuestionDTO question);
         void DeleteQuestion(int id);
         QuestionDTO GetQuestionByContent(string content);
+        QuestionDTO GetQuestionWithAnswersById(int id);
     }
 }

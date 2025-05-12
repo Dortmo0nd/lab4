@@ -28,7 +28,6 @@
                 <li><a asp-controller="Home" asp-action="Index" class="btn btn-info" href="~/Home/Index">Головна</a></li>
                 <li><a asp-controller="Places" asp-action="Index" class="btn btn-info" href="~/Places/Index">Місця</a></li>
                 <li><a asp-controller="Reviews" asp-action="Index" class="btn btn-info" href="~/Reviews/Index">Відгуки</a></li>
-                <li><a asp-controller="Questions" asp-action="Index" class="btn btn-info" href="~/Questions/Index">Питання</a></li>
                 @if (User.IsInRole("Admin"))
                 {
                     <li><a asp-controller="Questions" asp-action="Create" class="btn btn-info" href="~/Questions/Create">Додати питання</a></li>

@@ -1,23 +1,35 @@
 @model Places.BLL.DTO.QuestionDTO
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Створити питання";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<h2>Create Question</h2>
+<h2>Створити нове питання</h2>
+
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
-        <label asp-for="Content" class="control-label">Content</label>
+        <label asp-for="Content" class="control-label">Зміст</label>
         <input asp-for="Content" class="form-control" />
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="PlaceName" class="control-label">Place Name</label>
-        <select id="PlaceName" name="PlaceName" class="form-control">
+        <label for="PlaceId" class="control-label">Місце</label>
+        <select id="PlaceId" name="PlaceId" class="form-control">
             @foreach (var place in ViewBag.Places)
             {
-                <option value="@place.Name">@place.Name</option>
+                <option value="@place.Id">@place.Name</option>
             }
         </select>
     </div>
+    @Html.AntiForgeryToken()
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary" href="~/Questions/Index">Back to List</a>
+        <input type="submit" value="Створити" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
     </div>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
