@@ -1,25 +1,27 @@
 @model Places.BLL.DTO.QuestionDTO
-
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Question Details";
+    ViewData["Title"] = "Деталі питання";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Question Details</h2>
-
+<h2>Деталі питання</h2>
 <div>
-    <h4>Question</h4>
+    <h4>Питання</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">Id</dt>
         <dd class="col-sm-10">@Model.Id</dd>
-        <dt class="col-sm-2">Content</dt>
+        <dt class="col-sm-2">Зміст</dt>
         <dd class="col-sm-10">@Model.Content</dd>
-        <dt class="col-sm-2">Place Id</dt>
+        <dt class="col-sm-2">Місце (Id)</dt>
         <dd class="col-sm-10">@Model.PlaceId</dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
 </div>

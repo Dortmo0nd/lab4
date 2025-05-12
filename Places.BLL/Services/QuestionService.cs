@@ -71,5 +71,11 @@ namespace Places.BLL.Services
             var question = _unitOfWork.QuestionRepository.Find(q => q.Content == content).FirstOrDefault();
             return _mapper.ToDto(question);
         }
+        
+        public QuestionDTO GetQuestionWithAnswersById(int id)
+        {
+            var question = _unitOfWork.QuestionRepository.GetWithInclude(q => q.Answers).FirstOrDefault(q => q.Id == id);
+            return _mapper.ToDto(question);
+        }
     }
 }

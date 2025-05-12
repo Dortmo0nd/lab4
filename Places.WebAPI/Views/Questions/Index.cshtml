@@ -1,23 +1,24 @@
 @model IEnumerable<Places.BLL.DTO.QuestionDTO>
-
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Questions";
+    ViewData["Title"] = "Питання";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Questions</h2>
-
+<h2>Питання</h2>
 <p>
-    <a asp-action="Create" class="btn btn-primary" href="~/Questions/Create">Create New</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Створити нове</a>
+    }
 </p>
-
 <table class="table">
     <thead>
     <tr>
         <th>Id</th>
-        <th>Content</th>
-        <th>Place Id</th>
-        <th>Actions</th>
+        <th>Зміст</th>
+        <th>Місце (Id)</th>
+        <th>Дії</th>
     </tr>
     </thead>
     <tbody>
@@ -28,9 +29,12 @@
             <td>@question.Content</td>
             <td>@question.PlaceId</td>
             <td>
-                <a asp-action="Details" asp-route-id="@question.Id" class="btn btn-info">Details</a>
-                <a asp-action="Edit" asp-route-id="@question.Id" class="btn btn-primary">Edit</a>
-                <a asp-action="Delete" asp-route-id="@question.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Details" asp-route-id="@question.Id" class="btn btn-info">Деталі</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@question.Id" class="btn btn-primary">Редагувати</a>
+                    <a asp-action="Delete" asp-route-id="@question.Id" class="btn btn-danger">Видалити</a>
+                }
             </td>
         </tr>
     }
