@@ -6,7 +6,6 @@
 }
 
 <h2>Деталі відгуку</h2>
-
 <div>
     <h4>Відгук</h4>
     <hr />
@@ -15,10 +14,10 @@
         <dd class="col-sm-10">@Model.Id</dd>
         <dt class="col-sm-2">Зміст</dt>
         <dd class="col-sm-10">@Model.Content</dd>
-        <dt class="col-sm-2">Місце (Id)</dt>
-        <dd class="col-sm-10">@Model.PlaceId</dd>
-        <dt class="col-sm-2">Користувач (Id)</dt>
-        <dd class="col-sm-10">@Model.UserId</dd>
+        <dt class="col-sm-2">Місце</dt>
+        <dd class="col-sm-10">@ViewBag.PlaceName</dd>
+        <dt class="col-sm-2">Користувач</dt>
+        <dd class="col-sm-10">@ViewBag.UserName</dd>
     </dl>
 </div>
 <div>

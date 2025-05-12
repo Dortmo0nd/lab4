@@ -1,59 +1,71 @@
 @model Places.BLL.DTO.PlaceDTO
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Деталі місця";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<h2>Place Details</h2>
-
+<h2>Деталі місця</h2>
 <div>
-    <h4>Place</h4>
+    <h4>Місце</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">Id</dt>
         <dd class="col-sm-10">@Model.Id</dd>
-        <dt class="col-sm-2">Name</dt>
+        <dt class="col-sm-2">Назва</dt>
         <dd class="col-sm-10">@Model.Name</dd>
-        <dt class="col-sm-2">Description</dt>
+        <dt class="col-sm-2">Опис</dt>
         <dd class="col-sm-10">@Model.Description</dd>
-        <dt class="col-sm-2">Latitude</dt>
+        <dt class="col-sm-2">Широта</dt>
         <dd class="col-sm-10">@Model.Latitude</dd>
-        <dt class="col-sm-2">Longitude</dt>
+        <dt class="col-sm-2">Довгота</dt>
         <dd class="col-sm-10">@Model.Longitude</dd>
     </dl>
 </div>
 
-<h3>Reviews</h3>
+<h3>Відгуки</h3>
 <table class="table">
     <thead>
-    <tr>
-        <th>Content</th>
-        <th>User Id</th>
-        <th>Actions</th>
-    </tr>
+        <tr>
+            <th>Зміст</th>
+            <th>Користувач</th>
+            <th>Дії</th>
+        </tr>
     </thead>
     <tbody>
     @foreach (var review in Model.Reviews)
     {
         <tr>
             <td>@review.Content</td>
-            <td>@review.UserId</td>
             <td>
-                <a asp-controller="Reviews" asp-action="Edit" asp-route-id="@review.Id" class="btn btn-primary">Edit</a>
-                <a asp-controller="Reviews" asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger">Delete</a>
+                @if (ViewBag.Users.ContainsKey(review.UserId))
+                {
+                    @ViewBag.Users[review.UserId]
+                }
+                else
+                {
+                    @:Невідомий користувач
+                }
+            </td>
+            <td>
+                <a asp-controller="Reviews" asp-action="Edit" asp-route-id="@review.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-controller="Reviews" asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger">Видалити</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
 <p>
-    <a asp-controller="Reviews" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Add Review</a>
+    <a asp-controller="Reviews" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Додати відгук</a>
 </p>
 
-<h3>Questions</h3>
+<h3>Питання</h3>
 <table class="table">
     <thead>
-    <tr>
-        <th>Content</th>
-        <th>Actions</th>
-    </tr>
+        <tr>
+            <th>Зміст</th>
+            <th>Дії</th>
+        </tr>
     </thead>
     <tbody>
     @foreach (var question in Model.Questions)
@@ -61,8 +73,8 @@
         <tr>
             <td>@question.Content</td>
             <td>
-                <a asp-controller="Questions" asp-action="Edit" asp-route-id="@question.Id" class="btn btn-primary">Edit</a>
-                <a asp-controller="Questions" asp-action="Delete" asp-route-id="@question.Id" class="btn btn-danger">Delete</a>
+                <a asp-controller="Questions" asp-action="Edit" asp-route-id="@question.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-controller="Questions" asp-action="Delete" asp-route-id="@question.Id" class="btn btn-danger">Видалити</a>
             </td>
         </tr>
     }
@@ -71,18 +83,18 @@
 <p>
     @if (User.IsInRole("Admin"))
     {
-        <a asp-controller="Questions" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Add Question</a>
+        <a asp-controller="Questions" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Додати питання</a>
     }
 </p>
 
-<h3>Media Files</h3>
+<h3>Медіа-файли</h3>
 <table class="table">
     <thead>
-    <tr>
-        <th>File Path</th>
-        <th>Type</th>
-        <th>Actions</th>
-    </tr>
+        <tr>
+            <th>Шлях до файлу</th>
+            <th>Тип</th>
+            <th>Дії</th>
+        </tr>
     </thead>
     <tbody>
     @foreach (var media in Model.MediaFiles)
@@ -91,19 +103,19 @@
             <td>@media.FilePath</td>
             <td>@media.Type</td>
             <td>
-                <a asp-controller="Media" asp-action="Edit" asp-route-id="@media.Id" class="btn btn-primary">Edit</a>
-                <a asp-controller="Media" asp-action="Delete" asp-route-id="@media.Id" class="btn btn-danger">Delete</a>
+                <a asp-controller="Media" asp-action="Edit" asp-route-id="@media.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-controller="Media" asp-action="Delete" asp-route-id="@media.Id" class="btn btn-danger">Видалити</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
 <p>
-    <a asp-controller="Media" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Add Media</a>
+    <a asp-controller="Media" asp-action="Create" asp-route-placeId="@Model.Id" class="btn btn-primary">Додати медіа</a>
 </p>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit Place</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Place</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати місце</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Видалити місце</a>
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
 </div>

@@ -23,7 +23,20 @@ namespace Places.WebAPI.Controllers
         // GET: Reviews/Index
         public IActionResult Index()
         {
-            var reviews = _reviewService.GetAllReviews();
+            var reviews = _reviewService.GetAllReviews().ToList();
+            var placeIds = reviews.Select(r => r.PlaceId).Distinct().ToList();
+            var userIds = reviews.Select(r => r.UserId).Distinct().ToList();
+
+            var places = _placeService.GetAllPlaces()
+                .Where(p => placeIds.Contains(p.Id))
+                .ToDictionary(p => p.Id, p => p.Name);
+            var users = _userService.GetAllUsers()
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionary(u => u.Id, u => u.Full_name);
+
+            ViewBag.Places = places;
+            ViewBag.Users = users;
+
             return View(reviews);
         }
 
@@ -32,6 +45,13 @@ namespace Places.WebAPI.Controllers
         {
             var review = _reviewService.GetReviewById(id);
             if (review == null) return NotFound();
+
+            var place = _placeService.GetPlaceById(review.PlaceId);
+            var user = _userService.GetUserById(review.UserId);
+
+            ViewBag.PlaceName = place?.Name ?? "Невідоме місце";
+            ViewBag.UserName = user?.Full_name ?? "Невідомий користувач";
+
             return View(review);
         }
 
