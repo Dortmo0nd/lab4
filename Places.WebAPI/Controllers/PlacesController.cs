@@ -8,10 +8,19 @@ namespace Places.WebAPI.Controllers
     public class PlacesController : Controller
     {
         private readonly IPlaceService _placeService;
+        private readonly IReviewService _reviewService;
+        private readonly IQuestionService _questionService;
+        private readonly IMediaService _mediaService;
+        private readonly IUserService _userService;
 
-        public PlacesController(IPlaceService placeService)
+        public PlacesController(IPlaceService placeService, IReviewService reviewService, 
+            IQuestionService questionService, IMediaService mediaService, IUserService userService)
         {
             _placeService = placeService;
+            _reviewService = reviewService;
+            _questionService = questionService;
+            _mediaService = mediaService;
+            _userService = userService;
         }
 
         // GET: Places
@@ -25,8 +34,15 @@ namespace Places.WebAPI.Controllers
         public IActionResult Details(int id)
         {
             var place = _placeService.GetPlaceById(id);
-            if (place == null)
-                return NotFound();
+            if (place == null) return NotFound();
+
+            var userIds = place.Reviews.Select(r => r.UserId).Distinct().ToList();
+            var users = _userService.GetAllUsers()
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionary(u => u.Id, u => u.Full_name);
+
+            ViewBag.Users = users;
+
             return View(place);
         }
 

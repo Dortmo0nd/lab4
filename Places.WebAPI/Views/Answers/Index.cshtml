@@ -16,8 +16,8 @@
     <tr>
         <th>Id</th>
         <th>Зміст</th>
-        <th>Питання (Id)</th>
-        <th>Користувач (Id)</th>
+        <th>Питання</th>
+        <th>Користувач</th>
         <th>Дії</th>
     </tr>
     </thead>
@@ -27,8 +27,8 @@
         <tr>
             <td>@answer.Id</td>
             <td>@answer.Content</td>
-            <td>@answer.QuestionId</td>
-            <td>@answer.UserId</td>
+            <td>@(ViewBag.Questions.ContainsKey(answer.QuestionId) ? ViewBag.Questions[answer.QuestionId] : "Немає")</td>
+            <td>@(ViewBag.Users.ContainsKey(answer.UserId) ? ViewBag.Users[answer.UserId] : "Немає")</td>
             <td>
                 <a asp-action="Details" asp-route-id="@answer.Id" class="btn btn-info">Деталі</a>
                 <a asp-action="Edit" asp-route-id="@answer.Id" class="btn btn-primary">Редагувати</a>
