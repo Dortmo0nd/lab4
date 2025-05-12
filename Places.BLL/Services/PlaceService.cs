@@ -23,15 +23,18 @@ namespace Places.BLL.Services
         public PlaceDTO GetPlaceById(int id)
         {
             var place = _unitOfWork.PlaceRepository
+                .Find(p => p.Id == id)
+                .FirstOrDefault();
+            if (place == null) return null;
+
+            var placeWithIncludes = _unitOfWork.PlaceRepository
                 .GetWithInclude(p => p.Reviews, p => p.Questions, p => p.MediaFiles)
                 .FirstOrDefault(p => p.Id == id);
 
-            if (place == null) return null;
-
-            var placeDto = _mapper.ToDto(place);
-            placeDto.Reviews = place.Reviews.Select(r => new ReviewMapper().ToDto(r)).ToList();
-            placeDto.Questions = place.Questions.Select(q => new QuestionMapper().ToDto(q)).ToList();
-            placeDto.MediaFiles = place.MediaFiles.Select(m => new MediaMapper().ToDto(m)).ToList();
+            var placeDto = _mapper.ToDto(placeWithIncludes);
+            placeDto.Reviews = placeWithIncludes.Reviews.Select(r => new ReviewMapper().ToDto(r)).ToList();
+            placeDto.Questions = placeWithIncludes.Questions.Select(q => new QuestionMapper().ToDto(q)).ToList();
+            placeDto.MediaFiles = placeWithIncludes.MediaFiles.Select(m => new MediaMapper().ToDto(m)).ToList();
             return placeDto;
         }
 

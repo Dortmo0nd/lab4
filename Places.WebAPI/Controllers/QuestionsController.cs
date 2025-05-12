@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using System.Security.Claims;
 using Places.BLL.Mappers;
 
 namespace Places.WebAPI.Controllers
@@ -42,33 +43,36 @@ namespace Places.WebAPI.Controllers
 
         // GET: Questions/Create
         [Authorize(Roles = "Admin")]
-        public IActionResult Create(int? placeId)
+        [HttpGet]
+        public IActionResult Create()
         {
             ViewBag.Places = _placeService.GetAllPlaces();
-            if (placeId.HasValue)
-            {
-                ViewBag.SelectedPlaceId = placeId.Value;
-            }
-            return View("Create");
+            return View();
         }
 
         // POST: Questions/Create
+        [Authorize] // Доступ лише для авторизованих користувачів
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Create(QuestionDTO questionDto, string PlaceName)
+        public IActionResult Create(QuestionDTO question)
         {
-            var place = _placeService.GetPlaceByName(PlaceName);
-            if (place != null)
+            if (!ModelState.IsValid)
             {
-                questionDto.PlaceId = place.Id;
-                var userId = _userService.GetUserByUsername(User.Identity.Name).Id;
-                _questionService.AddQuestion(questionDto, userId);
-                return RedirectToAction(nameof(Index));
+                ViewBag.Places = _placeService.GetAllPlaces(); // Повернення списку місць для форми
+                return View(question);
             }
-            ModelState.AddModelError("", "Place not found");
-            ViewBag.Places = _placeService.GetAllPlaces();
-            return View("Create", questionDto);
+
+            // Отримання ідентифікатора авторизованого користувача
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                // Якщо claim відсутній або не є числом, перенаправляємо на сторінку помилки
+                return RedirectToAction("Error", "Home");
+            }
+
+            // Передача question і userId у сервіс
+            _questionService.AddQuestion(question, userId);
+
+            return RedirectToAction("Index");
         }
 
         // GET: Questions/Edit/5
