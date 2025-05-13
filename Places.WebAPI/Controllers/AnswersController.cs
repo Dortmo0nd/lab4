@@ -1,24 +1,27 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Linq;
 
 namespace Places.WebAPI.Controllers
 {
+    [Authorize]
     public class AnswersController : Controller
     {
         private readonly IAnswerService _answerService;
-        private readonly IQuestionService _questionService; // Додаємо це
-        private readonly IUserService _userService; // Додаємо це
+        private readonly IQuestionService _questionService;
+        private readonly IUserService _userService;
 
         public AnswersController(IAnswerService answerService, IQuestionService questionService, IUserService userService)
         {
             _answerService = answerService;
-            _questionService = questionService; // Ініціалізуємо
-            _userService = userService; // Ініціалізуємо
+            _questionService = questionService;
+            _userService = userService;
         }
 
+        // GET: Answers
         public IActionResult Index()
         {
             var answers = _answerService.GetAllAnswers();
@@ -29,77 +32,103 @@ namespace Places.WebAPI.Controllers
             return View(answers);
         }
 
+        // GET: Answers/Details/5
         public IActionResult Details(int id)
         {
             var answer = _answerService.GetAnswerById(id);
             if (answer == null)
                 return NotFound();
-            var questionContent = _questionService.GetQuestionById(answer.QuestionId)?.Content ?? "Немає";
-            var userName = _userService.GetUserById(answer.UserId)?.Full_name ?? "Немає";
-            ViewBag.QuestionContent = questionContent;
-            ViewBag.UserName = userName;
+            var question = _questionService.GetQuestionById(answer.QuestionId);
+            var user = _userService.GetUserById(answer.UserId);
+            ViewBag.QuestionContent = question?.Content ?? "Невідоме питання";
+            ViewBag.UserName = user?.Full_name ?? "Невідомий користувач";
             return View(answer);
         }
 
-        public IActionResult Create()
+        // GET: Answers/Create
+        public IActionResult Create(int? questionId)
         {
             ViewBag.Questions = _questionService.GetAllQuestions();
-            ViewBag.Users = _userService.GetAllUsers();
-            return View();
+            return View(new AnswerDTO { QuestionId = questionId ?? 0 });
         }
 
+        // POST: Answers/Create
         [HttpPost]
-        public IActionResult Create(AnswerDTO answer, string QuestionContent, string UserName)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(AnswerDTO answer)
         {
-            var question = _questionService.GetQuestionByContent(QuestionContent);
-            var user = _userService.GetUserByUsername(UserName);
-            if (question != null && user != null && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                answer.QuestionId = question.Id;
-                answer.UserId = user.Id;
+                answer.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 _answerService.AddAnswer(answer);
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Questions = _questionService.GetAllQuestions();
-            ViewBag.Users = _userService.GetAllUsers();
-            ModelState.AddModelError("", "Питання або користувач не знайдені.");
             return View(answer);
         }
 
+        // GET: Answers/Edit/5
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             var answer = _answerService.GetAnswerById(id);
             if (answer == null)
                 return NotFound();
+            // Перевірка прав доступу
+            if (!IsOwnerOrAdmin(answer.UserId))
+                return Forbid();
+            ViewBag.Questions = _questionService.GetAllQuestions();
             return View(answer);
         }
 
+        // POST: Answers/Edit/5
         [HttpPost]
-        public IActionResult Edit(int id, AnswerDTO answer)
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(AnswerDTO answer)
         {
-            if (id != answer.Id)
-                return BadRequest();
+            // Перевірка прав доступу
+            if (!IsOwnerOrAdmin(answer.UserId))
+                return Forbid();
             if (ModelState.IsValid)
             {
                 _answerService.UpdateAnswer(answer);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Questions = _questionService.GetAllQuestions();
             return View(answer);
         }
 
+        // GET: Answers/Delete/5
+        [HttpGet]
         public IActionResult Delete(int id)
         {
             var answer = _answerService.GetAnswerById(id);
             if (answer == null)
                 return NotFound();
+            // Перевірка прав доступу
+            if (!IsOwnerOrAdmin(answer.UserId))
+                return Forbid();
             return View(answer);
         }
 
-        [HttpPost, ActionName("Delete")]
+        // POST: Answers/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
+            var answer = _answerService.GetAnswerById(id);
+            // Перевірка прав доступу
+            if (!IsOwnerOrAdmin(answer.UserId))
+                return Forbid();
             _answerService.DeleteAnswer(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        private bool IsOwnerOrAdmin(int userId)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var isAdmin = User.IsInRole("Admin");
+            return isAdmin || currentUserId == userId;
         }
     }
 }
