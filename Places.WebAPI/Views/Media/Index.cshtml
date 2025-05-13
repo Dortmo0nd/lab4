@@ -27,10 +27,23 @@
     {
         <tr>
             <td>@media.Id</td>
-            <td>@media.FilePath</td>
+            <td>
+                @if (media.Type == "Фото")
+                {
+                    <a href="@media.FilePath" target="_blank">Переглянути фото</a>
+                }
+                else
+                {
+                    @media.FilePath
+                }
+            </td>
             <td>@media.Type</td>
-            <td>@(media.PlaceId.HasValue && ViewBag.Places.ContainsKey(media.PlaceId.Value) ? ViewBag.Places[media.PlaceId.Value] : "Немає")</td>
-            <td>@(media.UserId.HasValue && ViewBag.Users.ContainsKey(media.UserId.Value) ? ViewBag.Users[media.UserId.Value] : "Немає")</td>
+            <td>
+                @(media.PlaceId.HasValue && ViewBag.Places.ContainsKey(media.PlaceId.Value) ? ViewBag.Places[media.PlaceId.Value] : "Немає")
+            </td>
+            <td>
+                @(media.UserId.HasValue && ViewBag.Users.ContainsKey(media.UserId.Value) ? ViewBag.Users[media.UserId.Value] : "Немає")
+            </td>
             <td>
                 <a asp-action="Details" asp-route-id="@media.Id" class="btn btn-info">Деталі</a>
                 @if (User.IsInRole("Admin") || (media.UserId.HasValue && int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) == media.UserId.Value))
