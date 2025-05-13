@@ -17,13 +17,12 @@ namespace Places.WebAPI.Controllers
             _userService = userService;
         }
 
+        // GET: Media
         public IActionResult Index()
         {
             var mediaFiles = _mediaService.GetAllMedia();
-            var places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
-            var users = _userService.GetAllUsers().ToDictionary(u => u.Id, u => u.Full_name);
-            ViewBag.Places = places;
-            ViewBag.Users = users;
+            ViewBag.Places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
+            ViewBag.Users = _userService.GetAllUsers().ToDictionary(u => u.Id, u => u.Full_name);
             return View(mediaFiles);
         }
 
