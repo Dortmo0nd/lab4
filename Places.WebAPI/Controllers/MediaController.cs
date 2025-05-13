@@ -47,79 +47,80 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MediaDTO mediaDTO, IFormFile file)
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(MediaDTO mediaDTO, IFormFile file)
+{
+    // Перевірка наявності файлу
+    if (file == null || file.Length == 0)
+    {
+        ModelState.AddModelError("file", "Будь ласка, виберіть файл.");
+        ViewBag.Places = _placeService.GetAllPlaces();
+        return View(mediaDTO);
+    }
+
+    // Перевірка типу файлу
+    var allowedImageTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+    if (!allowedImageTypes.Contains(file.ContentType) && mediaDTO.Type == "Фото")
+    {
+        ModelState.AddModelError("file", "Дозволені лише файли у форматах JPEG, PNG або GIF для фото.");
+        ViewBag.Places = _placeService.GetAllPlaces();
+        return View(mediaDTO);
+    }
+
+    // Перевірка розміру файлу (максимум 5 МБ)
+    const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+    if (file.Length > maxFileSize)
+    {
+        ModelState.AddModelError("file", "Розмір файлу перевищує 5 МБ.");
+        ViewBag.Places = _placeService.GetAllPlaces();
+        return View(mediaDTO);
+    }
+
+    // Перевірка типу медіа
+    if (string.IsNullOrEmpty(mediaDTO.Type))
+    {
+        ModelState.AddModelError("Type", "Будь ласка, виберіть тип медіа.");
+        ViewBag.Places = _placeService.GetAllPlaces();
+        return View(mediaDTO);
+    }
+
+    // Визначаємо шлях для збереження файлу
+    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+    if (!Directory.Exists(uploadsFolder))
+    {
+        Directory.CreateDirectory(uploadsFolder);
+    }
+
+    // Унікальне ім’я файлу
+    var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+    try
+    {
+        // Зберігаємо файл
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
-            // Перевірка наявності файлу
-            if (file == null || file.Length == 0)
-            {
-                ModelState.AddModelError("file", "Будь ласка, виберіть файл.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка типу файлу
-            var allowedImageTypes = new[] { "image/jpeg", "image/png", "image/gif" };
-            if (!allowedImageTypes.Contains(file.ContentType) && mediaDTO.Type == "Фото")
-            {
-                ModelState.AddModelError("file", "Дозволені лише файли у форматах JPEG, PNG або GIF для фото.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка розміру файлу (максимум 5 МБ)
-            const long maxFileSize = 5 * 1024 * 1024; // 5 MB
-            if (file.Length > maxFileSize)
-            {
-                ModelState.AddModelError("file", "Розмір файлу перевищує 5 МБ.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Перевірка типу медіа
-            if (string.IsNullOrEmpty(mediaDTO.Type))
-            {
-                ModelState.AddModelError("Type", "Будь ласка, виберіть тип медіа.");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            // Визначаємо шлях для збереження файлу
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            // Унікальне ім’я файлу
-            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            try
-            {
-                // Зберігаємо файл
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-
-                // Заповнюємо DTO
-                mediaDTO.FilePath = $"/uploads/{uniqueFileName}";
-                mediaDTO.UserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value); // Отримуємо ID користувача
-
-                // Додаємо медіа через сервіс
-                _mediaService.AddMedia(mediaDTO);
-            }
-            catch (Exception ex)
-            {
-                // Логування помилки (можна використати ILogger)
-                ModelState.AddModelError("", $"Помилка при збереженні файлу: {ex.Message}");
-                ViewBag.Places = _placeService.GetAllPlaces();
-                return View(mediaDTO);
-            }
-
-            return RedirectToAction("Details", "Places", new { id = mediaDTO.PlaceId });
+            await file.CopyToAsync(fileStream);
         }
+
+        // Заповнюємо DTO
+        mediaDTO.FilePath = $"/uploads/{uniqueFileName}";
+        mediaDTO.UserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value); // Отримуємо ID користувача
+
+        // Додаємо медіа через сервіс
+        _mediaService.AddMedia(mediaDTO);
+    }
+    catch (Exception ex)
+    {
+        // Логування помилки (можна використати ILogger)
+        ModelState.AddModelError("", $"Помилка при збереженні файлу: {ex.Message}");
+        ViewBag.Places = _placeService.GetAllPlaces();
+        return View(mediaDTO);
+    }
+
+    // Перенаправлення на сторінку списку медіа
+    return RedirectToAction("Index", "Media");
+}
 
         public IActionResult Edit(int id)
         {
