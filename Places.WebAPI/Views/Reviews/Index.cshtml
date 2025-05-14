@@ -33,7 +33,10 @@
                 @if (User.IsInRole("Admin") || (review.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))))
                 {
                     <a asp-action="Edit" asp-route-id="@review.Id" class="btn btn-primary">Редагувати</a>
-                    <a asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger">Видалити</a>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        <input type="hidden" name="Id" value="@review.Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Ви впевнені?')">Видалити</button>
+                    </form>
                 }
             </td>
         </tr>

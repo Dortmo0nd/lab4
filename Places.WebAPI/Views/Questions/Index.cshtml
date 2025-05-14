@@ -17,7 +17,7 @@
     <tr>
         <th>Id</th>
         <th>Зміст</th>
-        <th>Місце (Id)</th>
+        <th>Місце</th>
         <th>Дії</th>
     </tr>
     </thead>
@@ -27,7 +27,16 @@
         <tr>
             <td>@question.Id</td>
             <td>@question.Content</td>
-            <td>@question.PlaceId</td>
+            <td>
+                @if (User.IsInRole("Admin") && ViewBag.Places != null && ViewBag.Places.ContainsKey(question.PlaceId))
+                {
+                    @ViewBag.Places[question.PlaceId]
+                }
+                else
+                {
+                    @question.PlaceId
+                }
+            </td>
             <td>
                 <a asp-action="Details" asp-route-id="@question.Id" class="btn btn-info">Деталі</a>
                 @if (User.IsInRole("Admin"))

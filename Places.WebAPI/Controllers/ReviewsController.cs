@@ -76,16 +76,23 @@ namespace Places.WebAPI.Controllers
         }
 
         // GET: Reviews/Delete/5
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             var review = _reviewService.GetReviewById(id);
             if (review == null)
+            {
                 return NotFound();
-            // Перевірка прав доступу
-            if (!IsOwnerOrAdmin(review.UserId))
-                return Forbid();
-            return View(review);
+            }
+
+            if (!User.IsInRole("Admin") && review.UserId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
+                return Forbid(); // 403, якщо немає прав
+            }
+
+            _reviewService.DeleteReview(id);
+            return RedirectToAction("Index");
         }
 
         // POST: Reviews/Delete/5
