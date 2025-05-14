@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.BLL", "Places.BLL\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.DAL", "Places.DAL\Places.DAL.csproj", "{69070BCE-7833-4D24-BA35-ACE923D11AC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.test_service", "Places.test_service\Places.test_service.csproj", "{724884D1-8AC3-4A43-ADF0-5E918FBDC114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.Infrastructure", "Places.Infrastructure\Places.Infrastructure.csproj", "{B771A064-244C-4EB2-80FD-9E468AC31522}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{69070BCE-7833-4D24-BA35-ACE923D11AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69070BCE-7833-4D24-BA35-ACE923D11AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69070BCE-7833-4D24-BA35-ACE923D11AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B771A064-244C-4EB2-80FD-9E468AC31522}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B771A064-244C-4EB2-80FD-9E468AC31522}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B771A064-244C-4EB2-80FD-9E468AC31522}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B771A064-244C-4EB2-80FD-9E468AC31522}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
