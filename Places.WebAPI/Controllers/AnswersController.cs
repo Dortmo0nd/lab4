@@ -116,12 +116,8 @@ namespace Places.WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var answer = _answerService.GetAnswerById(id);
-            // Перевірка прав доступу
-            if (!IsOwnerOrAdmin(answer.UserId))
-                return Forbid();
             _answerService.DeleteAnswer(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
 
         private bool IsOwnerOrAdmin(int userId)
