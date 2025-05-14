@@ -11,7 +11,6 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Створити нову</a>
 </p>
-
 <table class="table">
     <thead>
     <tr>
@@ -32,10 +31,13 @@
             <td>@(ViewBag.Users.ContainsKey(answer.UserId) ? ViewBag.Users[answer.UserId] : "Немає")</td>
             <td>
                 <a asp-action="Details" asp-route-id="@answer.Id" class="btn btn-info">Деталі</a>
-                @if (User.IsInRole("Admin") || (answer.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))))
+                @if (User.IsInRole("Admin") || answer.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
                 {
                     <a asp-action="Edit" asp-route-id="@answer.Id" class="btn btn-primary">Редагувати</a>
-                    <a asp-action="Delete" asp-route-id="@answer.Id" class="btn btn-danger">Видалити</a>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        <input type="hidden" name="Id" value="@answer.Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Ви впевнені?')">Видалити</button>
+                    </form>
                 }
             </td>
         </tr>
