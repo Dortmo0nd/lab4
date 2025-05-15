@@ -9,25 +9,22 @@
 <h2>Places</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
-</p>
-
-<p>
-    @if (User.IsInRole("Admin"))
+    @if (User.IsInRole("Visitor") || User.IsInRole("Admin"))
     {
-        <a asp-action="Create" class="btn btn-primary">Створити нове</a>
+        <a asp-action="Create" class="btn btn-primary">Створити нове місце</a>
     }
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Назад на головну</a>
 </p>
 
 <table class="table">
     <thead>
     <tr>
         <th>Id</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Latitude</th>
-        <th>Longitude</th>
+        <th>Назва</th>
+        <th>Опис</th>
+        <th>Широта</th>
+        <th>Довгота</th>
+        <th>Дії</th>
     </tr>
     </thead>
     <tbody>
@@ -39,7 +36,16 @@
             <td>@place.Description</td>
             <td>@place.Latitude</td>
             <td>@place.Longitude</td>
-            
+            <td>
+                <a asp-action="Details" asp-route-id="@place.Id" class="btn btn-info">Деталі</a>
+            </td>
+            <td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@place.Id" class="btn btn-primary">Редагувати</a>
+                    <a asp-action="Delete" asp-route-id="@place.Id" class="btn btn-danger">Видалити</a>
+                }
+            </td>
         </tr>
     }
     </tbody>
