@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
 namespace Places.WebAPI.Controllers
@@ -65,7 +66,7 @@ namespace Places.WebAPI.Controllers
             return View(placeDto);
         }
 
-        // GET: Places/Edit/5
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var place = _placeService.GetPlaceById(id);
@@ -74,7 +75,7 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
-        // POST: Places/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, PlaceDTO place)
@@ -89,7 +90,7 @@ namespace Places.WebAPI.Controllers
             return View(place);
         }
 
-        // GET: Places/Delete/5
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var place = _placeService.GetPlaceById(id);
@@ -97,8 +98,8 @@ namespace Places.WebAPI.Controllers
                 return NotFound();
             return View(place);
         }
-
-        // POST: Places/Delete/5
+        
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

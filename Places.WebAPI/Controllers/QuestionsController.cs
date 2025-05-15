@@ -27,6 +27,8 @@ namespace Places.WebAPI.Controllers
         public IActionResult Index()
         {
             var questions = _questionService.GetAllQuestions();
+            var places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
+            ViewBag.Places = places;
             return View(questions);
         }
 
@@ -91,23 +93,22 @@ namespace Places.WebAPI.Controllers
         // POST: Questions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id, QuestionDTO questionDto, string PlaceName)
+        public IActionResult Edit(QuestionDTO questionDto)
         {
-            if (id != questionDto.Id)
+            if (ModelState.IsValid)
             {
-                return BadRequest();
+                try
+                {
+                    _questionService.UpdateQuestion(questionDto);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Помилка при оновленні питання: " + ex.Message);
+                }
             }
-            var place = _placeService.GetPlaceByName(PlaceName);
-            if (place != null)
-            {
-                questionDto.PlaceId = place.Id;
-                _questionService.UpdateQuestion(questionDto);
-                return RedirectToAction(nameof(Index));
-            }
-            ModelState.AddModelError("", "Place not found");
-            ViewBag.Places = _placeService.GetAllPlaces();
-            return View("Edit", questionDto);
+            ViewBag.Places = _placeService.GetAllPlaces().ToList(); // Для випадаючого списку
+            return View(questionDto);
         }
 
         // GET: Questions/Delete/5

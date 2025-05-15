@@ -53,9 +53,15 @@ namespace Places.BLL.Services
             if (userDto == null || string.IsNullOrEmpty(userDto.Password))
                 throw new ArgumentException("Invalid user data");
 
-            var user = _mapper.ToEntity(userDto);
-            user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
-            _unitOfWork.UserRepository.Update(user);
+            var existingUser = _unitOfWork.UserRepository.GetById(userDto.Id);
+            if (existingUser == null)
+                throw new Exception("User not found");
+
+            existingUser.Full_name = userDto.Full_name;
+            existingUser.Role = userDto.Role;
+            existingUser.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
+            _unitOfWork.UserRepository.Update(existingUser);
             _unitOfWork.SaveChanges();
         }
 
