@@ -55,9 +55,7 @@ public class AnswersController : Controller
             return NotFound();
         }
 
-        var questions = _questionService.GetAllQuestions().ToList();
-        ViewBag.Questions = questions;
-
+        ViewBag.Questions = _questionService.GetAllQuestions().ToList();
         return View(answer);
     }
 
@@ -72,16 +70,13 @@ public class AnswersController : Controller
                 _answerService.UpdateAnswer(answerDto);
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
             }
         }
 
-        // Reload questions if model state is invalid
-        var questions = _questionService.GetAllQuestions().ToList();
-        ViewBag.Questions = questions;
-
+        ViewBag.Questions = _questionService.GetAllQuestions().ToList();
         return View(answerDto);
     }
 
@@ -89,10 +84,18 @@ public class AnswersController : Controller
     public IActionResult Delete(int id)
     {
         var answer = _answerService.GetAnswerById(id);
-        if (answer == null || (!User.IsInRole("Admin") && answer.UserId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))))
+        if (answer == null)
+        {
+            return NotFound();
+        }
+
+        // Only admin or the author of the answer can delete it
+        var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (!User.IsInRole("Admin") && answer.UserId != currentUserId)
         {
             return Forbid();
         }
+
         _answerService.DeleteAnswer(id);
         return RedirectToAction("Index");
     }
@@ -105,6 +108,7 @@ public class AnswersController : Controller
         {
             return NotFound();
         }
+
         ViewBag.QuestionContent = _questionService.GetQuestionById(answer.QuestionId)?.Content;
         return View(answer);
     }
