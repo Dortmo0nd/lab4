@@ -27,6 +27,7 @@
       <ProjectReference Include="..\Places.Abstract\Places.Abstract.csproj" />
       <ProjectReference Include="..\Places.BLL\Places.BLL.csproj" />
       <ProjectReference Include="..\Places.DAL\Places.DAL.csproj" />
+      <ProjectReference Include="..\Places.Infrastructure\Places.Infrastructure.csproj" />
       <ProjectReference Include="..\Places.Models\Places.Models.csproj" />
     </ItemGroup>
 
