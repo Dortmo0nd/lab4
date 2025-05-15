@@ -50,23 +50,38 @@ public class AnswersController : Controller
     public IActionResult Edit(int id)
     {
         var answer = _answerService.GetAnswerById(id);
-        if (answer == null || (!User.IsInRole("Admin") && answer.UserId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))))
+        if (answer == null)
         {
-            return Forbid();
+            return NotFound();
         }
-        ViewBag.Questions = _questionService.GetAllQuestions().ToList();
+
+        var questions = _questionService.GetAllQuestions().ToList();
+        ViewBag.Questions = questions;
+
         return View(answer);
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Edit(AnswerDTO answerDto)
     {
         if (ModelState.IsValid)
         {
-            _answerService.UpdateAnswer(answerDto);
-            return RedirectToAction("Index");
+            try
+            {
+                _answerService.UpdateAnswer(answerDto);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+            }
         }
-        ViewBag.Questions = _questionService.GetAllQuestions().ToList();
+
+        // Reload questions if model state is invalid
+        var questions = _questionService.GetAllQuestions().ToList();
+        ViewBag.Questions = questions;
+
         return View(answerDto);
     }
 
