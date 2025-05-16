@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.DAL", "Places.DAL\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.test_services", "Places.test_services\Places.test_services.csproj", "{EFB3A8FB-CAC9-4BC0-9538-4691B5E5CC0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.test_service", "Places.test_service\Places.test_service.csproj", "{724884D1-8AC3-4A43-ADF0-5E918FBDC114}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Places.Infrastructure", "Places.Infrastructure\Places.Infrastructure.csproj", "{32EC7EC5-571F-4581-9448-7AA79B32FF09}"
 EndProject
 
@@ -57,10 +55,6 @@ Global
 		{EFB3A8FB-CAC9-4BC0-9538-4691B5E5CC0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFB3A8FB-CAC9-4BC0-9538-4691B5E5CC0C}.Release|Any CPU.Build.0 = Release|Any CPU
 
-		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{724884D1-8AC3-4A43-ADF0-5E918FBDC114}.Release|Any CPU.Build.0 = Release|Any CPU
 
 		{32EC7EC5-571F-4581-9448-7AA79B32FF09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32EC7EC5-571F-4581-9448-7AA79B32FF09}.Debug|Any CPU.Build.0 = Debug|Any CPU

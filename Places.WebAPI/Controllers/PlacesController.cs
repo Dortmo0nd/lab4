@@ -25,6 +25,7 @@ namespace Places.WebAPI.Controllers
         }
 
         // GET: Places
+        [HttpGet]
         public IActionResult Index()
         {
             var places = _placeService.GetAllPlaces();
