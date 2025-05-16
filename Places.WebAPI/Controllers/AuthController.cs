@@ -27,6 +27,7 @@ namespace Places.WebAPI.Controllers
         }
 
         // GET: Auth/Login
+        [HttpGet]
         public IActionResult Login()
         {
             return View();

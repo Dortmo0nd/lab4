@@ -12,4 +12,9 @@
       <ProjectReference Include="..\Places.DAL\Places.DAL.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Ninject" Version="3.3.6" />
+      <PackageReference Include="Ninject.Web.AspNetCore" Version="9.0.0" />
+    </ItemGroup>
+
 </Project>
