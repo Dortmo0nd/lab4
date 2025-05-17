@@ -1,136 +1,186 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
 using System.Security.Claims;
-using Places.BLL.Mappers;
+using System.Linq;
 
-namespace Places.WebAPI.Controllers
+public class QuestionsController : Controller
 {
-    [Authorize(Roles = "Admin")]
-    public class QuestionsController : Controller
+    private readonly IQuestionService _questionService;
+    private readonly IPlaceService _placeService;
+    private readonly IUserService _userService;
+
+    public QuestionsController(IQuestionService questionService, IPlaceService placeService, IUserService userService)
     {
-        private readonly IQuestionService _questionService;
-        private readonly IPlaceService _placeService;
-        private readonly IUserService _userService;
+        _questionService = questionService;
+        _placeService = placeService;
+        _userService = userService;
+    }
 
-        public QuestionsController(IQuestionService questionService, IPlaceService placeService, IUserService userService)
+    // WEB ACTIONS
+
+    [HttpGet]
+    public IActionResult Index()
+    {
+        var questions = _questionService.GetAllQuestions();
+        ViewBag.Places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
+        return View(questions);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult Create()
+    {
+        ViewBag.Places = _placeService.GetAllPlaces().ToList();
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult Create(QuestionDTO questionDto)
+    {
+        if (ModelState.IsValid)
         {
-            _questionService = questionService;
-            _placeService = placeService;
-            _userService = userService;
-        }
-
-        // GET: Questions
-        public IActionResult Index()
-        {
-            var questions = _questionService.GetAllQuestions();
-            var places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
-            ViewBag.Places = places;
-            return View(questions);
-        }
-
-        // GET: Questions/Details/5
-        public IActionResult Details(int id)
-        {
-            var question = _questionService.GetQuestionWithAnswersById(id);
-            if (question == null)
-            {
-                return NotFound();
-            }
-            return View(question);
-        }
-
-        // GET: Questions/Create
-        [Authorize(Roles = "Admin")]
-        [HttpGet]
-        public IActionResult Create()
-        {
-            ViewBag.Places = _placeService.GetAllPlaces();
-            return View();
-        }
-
-        // POST: Questions/Create
-        [Authorize] // Доступ лише для авторизованих користувачів
-        [HttpPost]
-        public IActionResult Create(QuestionDTO question)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Places = _placeService.GetAllPlaces(); // Повернення списку місць для форми
-                return View(question);
-            }
-
-            // Отримання ідентифікатора авторизованого користувача
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
-            {
-                // Якщо claim відсутній або не є числом, перенаправляємо на сторінку помилки
-                return RedirectToAction("Error", "Home");
-            }
-
-            // Передача question і userId у сервіс
-            _questionService.AddQuestion(question, userId);
-
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            _questionService.AddQuestion(questionDto, userId);
             return RedirectToAction("Index");
         }
+        ViewBag.Places = _placeService.GetAllPlaces().ToList();
+        return View(questionDto);
+    }
 
-        // GET: Questions/Edit/5
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
+    [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult Edit(int id)
+    {
+        var question = _questionService.GetQuestionById(id);
+        if (question == null)
         {
-            var question = _questionService.GetQuestionById(id);
-            if (question == null)
+            return NotFound();
+        }
+        ViewBag.Places = _placeService.GetAllPlaces().ToList();
+        return View(question);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult Edit(QuestionDTO questionDto)
+    {
+        if (ModelState.IsValid)
+        {
+            try
             {
-                return NotFound();
+                _questionService.UpdateQuestion(questionDto);
+                return RedirectToAction(nameof(Index));
             }
-            ViewBag.Places = _placeService.GetAllPlaces();
-            return View("Edit", question);
-        }
-
-        // POST: Questions/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(QuestionDTO questionDto)
-        {
-            if (ModelState.IsValid)
+            catch (Exception)
             {
-                try
-                {
-                    _questionService.UpdateQuestion(questionDto);
-                    return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Помилка при оновленні питання: " + ex.Message);
-                }
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
             }
-            ViewBag.Places = _placeService.GetAllPlaces().ToList(); // Для випадаючого списку
-            return View(questionDto);
         }
+        ViewBag.Places = _placeService.GetAllPlaces().ToList();
+        return View(questionDto);
+    }
 
-        // GET: Questions/Delete/5
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
+    [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult Delete(int id)
+    {
+        var question = _questionService.GetQuestionById(id);
+        if (question == null)
         {
-            var question = _questionService.GetQuestionById(id);
-            if (question == null)
-            {
-                return NotFound();
-            }
-            return View("Delete", question);
+            return NotFound();
         }
+        _questionService.DeleteQuestion(id);
+        return RedirectToAction("Index");
+    }
 
-        // POST: Questions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteConfirmed(int id)
+    [HttpGet]
+    public IActionResult Details(int id)
+    {
+        var question = _questionService.GetQuestionById(id);
+        if (question == null)
         {
-            _questionService.DeleteQuestion(id);
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
+        ViewBag.PlaceName = _placeService.GetPlaceById(question.PlaceId)?.Name;
+        return View(question);
+    }
+
+    // API ACTIONS
+
+    [HttpGet("api/questions")]
+    public IActionResult GetAll()
+    {
+        var questions = _questionService.GetAllQuestions();
+        return Ok(questions);
+    }
+
+    [HttpGet("api/questions/{id}")]
+    public IActionResult GetById(int id)
+    {
+        var question = _questionService.GetQuestionById(id);
+        if (question == null)
+        {
+            return NotFound();
+        }
+        return Ok(question);
+    }
+
+    [HttpPost("api/questions")]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult CreateApi([FromBody] QuestionDTO questionDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        _questionService.AddQuestion(questionDto, userId);
+        return CreatedAtAction(nameof(GetById), new { id = questionDto.Id }, questionDto);
+    }
+
+    [HttpPut("api/questions/{id}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult UpdateApi(int id, [FromBody] QuestionDTO questionDto)
+    {
+        if (id != questionDto.Id)
+        {
+            return BadRequest("ID mismatch");
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var existingQuestion = _questionService.GetQuestionById(id);
+        if (existingQuestion == null)
+        {
+            return NotFound();
+        }
+        try
+        {
+            _questionService.UpdateQuestion(questionDto);
+            return NoContent();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("api/questions/{id}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public IActionResult DeleteApi(int id)
+    {
+        var question = _questionService.GetQuestionById(id);
+        if (question == null)
+        {
+            return NotFound();
+        }
+        _questionService.DeleteQuestion(id);
+        return NoContent();
     }
 }

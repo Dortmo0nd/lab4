@@ -3,15 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
 using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Places.WebAPI.Controllers
 {
-    [Authorize]
     public class MediaController : Controller
     {
         private readonly IMediaService _mediaService;
@@ -198,6 +195,81 @@ namespace Places.WebAPI.Controllers
         {
             _mediaService.DeleteMedia(id);
             return RedirectToAction(nameof(Index));
+        }
+        
+        //api
+        [HttpGet("api/media")]
+        public IActionResult GetAll()
+        {
+            var mediaFiles = _mediaService.GetAllMedia();
+            return Ok(mediaFiles);
+        }
+
+        [HttpGet("api/media/{id}")]
+        public IActionResult GetById(int id)
+        {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+            {
+                return NotFound();
+            }
+            return Ok(media);
+        }
+
+        [HttpPost("api/media")]
+        public IActionResult CreateApi([FromBody] MediaDTO mediaDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            mediaDto.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            _mediaService.AddMedia(mediaDto);
+            return CreatedAtAction(nameof(GetById), new { id = mediaDto.Id }, mediaDto);
+        }
+
+        [HttpPut("api/media/{id}")]
+        public IActionResult UpdateApi(int id, [FromBody] MediaDTO mediaDto)
+        {
+            if (id != mediaDto.Id)
+            {
+                return BadRequest("ID mismatch");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var existingMedia = _mediaService.GetMediaById(id);
+            if (existingMedia == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _mediaService.UpdateMedia(mediaDto);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("api/media/{id}")]
+        public IActionResult DeleteApi(int id)
+        {
+            var media = _mediaService.GetMediaById(id);
+            if (media == null)
+            {
+                return NotFound();
+            }
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (!User.IsInRole("Admin") && media.UserId != currentUserId)
+            {
+                return Forbid();
+            }
+            _mediaService.DeleteMedia(id);
+            return NoContent();
         }
     }
 }

@@ -9,18 +9,11 @@ namespace Places.WebAPI.Controllers
     public class PlacesController : Controller
     {
         private readonly IPlaceService _placeService;
-        private readonly IReviewService _reviewService;
-        private readonly IQuestionService _questionService;
-        private readonly IMediaService _mediaService;
         private readonly IUserService _userService;
 
-        public PlacesController(IPlaceService placeService, IReviewService reviewService, 
-            IQuestionService questionService, IMediaService mediaService, IUserService userService)
+        public PlacesController(IPlaceService placeService, IUserService userService)
         {
             _placeService = placeService;
-            _reviewService = reviewService;
-            _questionService = questionService;
-            _mediaService = mediaService;
             _userService = userService;
         }
 
@@ -107,6 +100,79 @@ namespace Places.WebAPI.Controllers
         {
             _placeService.DeletePlace(id);
             return RedirectToAction(nameof(Index));
+        }
+        
+        // api action
+        
+        [HttpGet("api/places")]
+        public IActionResult GetAll()
+        {
+            var places = _placeService.GetAllPlaces();
+            return Ok(places);
+        }
+
+        [HttpGet("api/places/{id}")]
+        public IActionResult GetById(int id)
+        {
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+            {
+                return NotFound();
+            }
+            return Ok(place);
+        }
+
+        [HttpPost("api/places")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateApi([FromBody] PlaceDTO placeDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _placeService.AddPlace(placeDto);
+            return CreatedAtAction(nameof(GetById), new { id = placeDto.Id }, placeDto);
+        }
+
+        [HttpPut("api/places/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateApi(int id, [FromBody] PlaceDTO placeDto)
+        {
+            if (id != placeDto.Id)
+            {
+                return BadRequest("ID mismatch");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var existingPlace = _placeService.GetPlaceById(id);
+            if (existingPlace == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _placeService.UpdatePlace(placeDto);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("api/places/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteApi(int id)
+        {
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+            {
+                return NotFound();
+            }
+            _placeService.DeletePlace(id);
+            return NoContent();
         }
     }
 }
