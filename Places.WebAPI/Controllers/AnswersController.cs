@@ -4,7 +4,6 @@ using Places.BLL.DTO;
 using Places.BLL.Interfaces;
 using System.Security.Claims;
 
-[Authorize]
 public class AnswersController : Controller
 {
     private readonly IAnswerService _answerService;
@@ -18,6 +17,9 @@ public class AnswersController : Controller
         _userService = userService;
     }
 
+    // WEB ACTIONS
+
+    [HttpGet]
     public IActionResult Index()
     {
         var answers = _answerService.GetAllAnswers();
@@ -34,6 +36,7 @@ public class AnswersController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Create(AnswerDTO answerDto)
     {
         if (ModelState.IsValid)
@@ -54,7 +57,6 @@ public class AnswersController : Controller
         {
             return NotFound();
         }
-
         ViewBag.Questions = _questionService.GetAllQuestions().ToList();
         return View(answer);
     }
@@ -75,7 +77,6 @@ public class AnswersController : Controller
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
             }
         }
-
         ViewBag.Questions = _questionService.GetAllQuestions().ToList();
         return View(answerDto);
     }
@@ -88,14 +89,11 @@ public class AnswersController : Controller
         {
             return NotFound();
         }
-
-        // Only admin or the author of the answer can delete it
         var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         if (!User.IsInRole("Admin") && answer.UserId != currentUserId)
         {
             return Forbid();
         }
-
         _answerService.DeleteAnswer(id);
         return RedirectToAction("Index");
     }
@@ -108,8 +106,89 @@ public class AnswersController : Controller
         {
             return NotFound();
         }
-
         ViewBag.QuestionContent = _questionService.GetQuestionById(answer.QuestionId)?.Content;
         return View(answer);
+    }
+
+    // API ACTIONS
+
+    [HttpGet("api/answers")]
+    public IActionResult GetAll()
+    {
+        var answers = _answerService.GetAllAnswers();
+        return Ok(answers);
+    }
+
+    [HttpGet("api/answers/{id}")]
+    public IActionResult GetById(int id)
+    {
+        var answer = _answerService.GetAnswerById(id);
+        if (answer == null)
+        {
+            return NotFound();
+        }
+        return Ok(answer);
+    }
+
+    [HttpPost("api/answers")]
+    public IActionResult CreateApi([FromBody] AnswerDTO answerDto)
+    {
+        if (answerDto.UserId == 0)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            answerDto.UserId = userIdString != null ? int.Parse(userIdString) : 1;
+        }
+        _answerService.AddAnswer(answerDto);
+        return CreatedAtAction(nameof(GetById), new { id = answerDto.Id }, answerDto);
+    }
+
+    [HttpPut("api/answers/{id}")]
+    public IActionResult UpdateApi(int id, [FromBody] AnswerDTO answerDto)
+    {
+        // Перевірка існування відповіді
+        var existingAnswer = _answerService.GetAnswerById(id);
+        if (existingAnswer == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            // Перевірка існування питання
+            var question = _questionService.GetQuestionById(answerDto.QuestionId);
+            if (question == null)
+            {
+                return BadRequest("Question with specified ID does not exist");
+            }
+
+            // Перевірка існування користувача
+            var user = _userService.GetUserById(answerDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User with specified ID does not exist");
+            }
+
+            // Оновлення відповіді
+            _answerService.UpdateAnswer(answerDto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            // Логування помилки (можна замінити на ваш логер, наприклад, ILogger)
+            Console.WriteLine($"Error updating answer: {ex.Message}\nStackTrace: {ex.StackTrace}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpDelete("api/answers/{id}")]
+    public IActionResult DeleteApi(int id)
+    {
+        var answer = _answerService.GetAnswerById(id);
+        if (answer == null)
+        {
+            return NotFound();
+        }
+        _answerService.DeleteAnswer(id);
+        return NoContent();
     }
 }

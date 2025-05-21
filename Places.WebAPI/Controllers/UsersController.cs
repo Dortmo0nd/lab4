@@ -1,183 +1,151 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Places.BLL.DTO;
 using Places.BLL.Interfaces;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.Extensions.Logging;
 
-namespace Places.WebAPI.Controllers
+//[Authorize]
+public class UsersController : Controller
 {
-    [Authorize(Roles = "Admin")]
-    public class UsersController : Controller
+    private readonly IUserService _userService;
+
+    public UsersController(IUserService userService)
     {
-        private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
+        _userService = userService;
+    }
 
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
-        {
-            _userService = userService;
-            _logger = logger;
-        }
+    // WEB ACTIONS
 
-        // GET: Users
-        public IActionResult Index()
-        {
-            var users = _userService.GetAllUsers();
-            return View(users);
-        }
+    [HttpGet]
+    public IActionResult Index()
+    {
+        var users = _userService.GetAllUsers();
+        return View(users);
+    }
 
-        // GET: Users/Details/5
-        public IActionResult Details(int id)
-        {
-            var user = _userService.GetUserById(id);
-            if (user == null)
-                return NotFound();
-            return View(user);
-        }
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Create()
+    {
+        return View();
+    }
 
-        // GET: Users/Create
-        public IActionResult Create()
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Create(UserDTO userDto)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
-        }
-
-        // POST: Users/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(UserDTO user)
-        {
-            if (ModelState.IsValid)
-            {
-                _userService.AddUser(user);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
-        }
-
-        // GET: Users/Edit/5
-        public IActionResult Edit(int id)
-        {
-            var user = _userService.GetUserById(id);
-            if (user == null)
-                return NotFound();
-            return View(user);
-        }
-
-        // POST: Users/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, UserDTO user)
-        {
-            if (id != user.Id)
-                return BadRequest();
-            if (ModelState.IsValid)
-            {
-                _userService.UpdateUser(user);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
-        }
-
-        // GET: Users/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var user = _userService.GetUserById(id);
-            if (user == null)
-                return NotFound();
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            _userService.DeleteUser(id);
+            _userService.AddUser(userDto);
             return RedirectToAction("Index");
         }
+        return View(userDto);
+    }
 
-        // GET: Users/Login
-        public IActionResult Login()
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Edit(int id)
+    {
+        var user = _userService.GetUserById(id);
+        if (user == null)
         {
-            return View();
+            return NotFound();
         }
+        return View(user);
+    }
 
-        // POST: Users/Login
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginDTO model)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Edit(UserDTO userDto)
+    {
+        if (ModelState.IsValid)
         {
-            _logger.LogInformation("Спроба логіну для користувача: {Username}", model.Username);
-
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogWarning("Невалідний стан моделі при спробі логіну.");
-                return View(model);
+                _userService.UpdateUser(userDto);
+                return RedirectToAction(nameof(Index));
             }
-
-            var user = _userService.GetUserByUsername(model.Username);
-            if (user != null && _userService.VerifyPassword(user.Id, model.Password))
+            catch (Exception)
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Full_name),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
-                };
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-
-                // Явно вказуємо, що cookie не персистентне
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = false // Cookie видаляється при закритті браузера
-                };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
             }
-
-            ModelState.AddModelError("", "Невірне ім’я користувача або пароль.");
-            return View(model);
         }
+        return View(userDto);
+    }
 
-        // GET: Users/Register
-        public IActionResult Register()
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Delete(int id)
+    {
+        var user = _userService.GetUserById(id);
+        if (user == null)
         {
-            return View();
+            return NotFound();
         }
+        _userService.DeleteUser(id);
+        return RedirectToAction("Index");
+    }
 
-        // POST: Users/Register
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Register(UserDTO user)
+    [HttpGet]
+    public IActionResult Details(int id)
+    {
+        var user = _userService.GetUserById(id);
+        if (user == null)
         {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _userService.AddUser(user);
-                    return RedirectToAction("Login");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Помилка при додаванні користувача: " + ex.Message);
-                }
-            }
-            return View(user);
+            return NotFound();
         }
+        return View(user);
+    }
 
-        // POST: Users/Logout
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+    // API ACTIONS
+
+    [HttpGet("api/users")]
+    public IActionResult GetAll()
+    {
+        var users = _userService.GetAllUsers();
+        return Ok(users);
+    }
+
+    [HttpGet("api/users/{id}")]
+    public IActionResult GetById(int id)
+    {
+        var user = _userService.GetUserById(id);
+        if (user == null)
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Users");
+            return NotFound();
         }
+        return Ok(user);
+    }
+
+    [HttpPost("api/users")]
+    public IActionResult CreateApi([FromBody] UserDTO userDto)
+    {
+        _userService.AddUser(userDto);
+        return CreatedAtAction(nameof(GetById), new { id = userDto.Id }, userDto);
+    }
+
+    [HttpPut("api/users/{id}")]
+    public IActionResult UpdateApi(int id, [FromBody] UserDTO userDto)
+    {
+
+        var existingUser = _userService.GetUserById(id);
+        try
+        {
+            _userService.UpdateUser(userDto);
+            return NoContent();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("api/users/{id}")]
+    public IActionResult DeleteApi(int id)
+    {
+        var user = _userService.GetUserById(id);
+        _userService.DeleteUser(id);
+        return NoContent();
     }
 }
