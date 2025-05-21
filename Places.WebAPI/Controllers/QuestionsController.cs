@@ -123,43 +123,21 @@ public class QuestionsController : Controller
     public IActionResult GetById(int id)
     {
         var question = _questionService.GetQuestionById(id);
-        if (question == null)
-        {
-            return NotFound();
-        }
         return Ok(question);
     }
 
     [HttpPost("api/questions")]
-    [Authorize(Roles = "Admin,Manager")]
     public IActionResult CreateApi([FromBody] QuestionDTO questionDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var userId = 1;
         _questionService.AddQuestion(questionDto, userId);
         return CreatedAtAction(nameof(GetById), new { id = questionDto.Id }, questionDto);
     }
 
     [HttpPut("api/questions/{id}")]
-    [Authorize(Roles = "Admin,Manager")]
     public IActionResult UpdateApi(int id, [FromBody] QuestionDTO questionDto)
     {
-        if (id != questionDto.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
         var existingQuestion = _questionService.GetQuestionById(id);
-        if (existingQuestion == null)
-        {
-            return NotFound();
-        }
         try
         {
             _questionService.UpdateQuestion(questionDto);
@@ -172,14 +150,8 @@ public class QuestionsController : Controller
     }
 
     [HttpDelete("api/questions/{id}")]
-    [Authorize(Roles = "Admin,Manager")]
     public IActionResult DeleteApi(int id)
     {
-        var question = _questionService.GetQuestionById(id);
-        if (question == null)
-        {
-            return NotFound();
-        }
         _questionService.DeleteQuestion(id);
         return NoContent();
     }

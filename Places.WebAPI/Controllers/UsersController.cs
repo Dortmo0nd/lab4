@@ -121,31 +121,15 @@ public class UsersController : Controller
     [HttpPost("api/users")]
     public IActionResult CreateApi([FromBody] UserDTO userDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
         _userService.AddUser(userDto);
         return CreatedAtAction(nameof(GetById), new { id = userDto.Id }, userDto);
     }
 
     [HttpPut("api/users/{id}")]
-    [Authorize(Roles = "Admin")]
     public IActionResult UpdateApi(int id, [FromBody] UserDTO userDto)
     {
-        if (id != userDto.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+
         var existingUser = _userService.GetUserById(id);
-        if (existingUser == null)
-        {
-            return NotFound();
-        }
         try
         {
             _userService.UpdateUser(userDto);
@@ -158,14 +142,9 @@ public class UsersController : Controller
     }
 
     [HttpDelete("api/users/{id}")]
-    [Authorize(Roles = "Admin")]
     public IActionResult DeleteApi(int id)
     {
         var user = _userService.GetUserById(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
         _userService.DeleteUser(id);
         return NoContent();
     }

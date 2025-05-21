@@ -124,21 +124,12 @@ public class ReviewsController : Controller
     public IActionResult GetById(int id)
     {
         var review = _reviewService.GetReviewById(id);
-        if (review == null)
-        {
-            return NotFound();
-        }
         return Ok(review);
     }
 
     [HttpPost("api/reviews")]
     public IActionResult CreateApi([FromBody] ReviewDTO reviewDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        reviewDto.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         _reviewService.AddReview(reviewDto);
         return CreatedAtAction(nameof(GetById), new { id = reviewDto.Id }, reviewDto);
     }
@@ -146,43 +137,13 @@ public class ReviewsController : Controller
     [HttpPut("api/reviews/{id}")]
     public IActionResult UpdateApi(int id, [FromBody] ReviewDTO reviewDto)
     {
-        if (id != reviewDto.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var existingReview = _reviewService.GetReviewById(id);
-        if (existingReview == null)
-        {
-            return NotFound();
-        }
-        try
-        {
             _reviewService.UpdateReview(reviewDto);
             return NoContent();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error");
-        }
     }
 
     [HttpDelete("api/reviews/{id}")]
     public IActionResult DeleteApi(int id)
     {
-        var review = _reviewService.GetReviewById(id);
-        if (review == null)
-        {
-            return NotFound();
-        }
-        var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        if (!User.IsInRole("Admin") && review.UserId != currentUserId)
-        {
-            return Forbid();
-        }
         _reviewService.DeleteReview(id);
         return NoContent();
     }

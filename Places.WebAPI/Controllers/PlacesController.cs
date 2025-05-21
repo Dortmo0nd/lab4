@@ -123,29 +123,15 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpPost("api/places")]
-        [Authorize(Roles = "Admin")]
         public IActionResult CreateApi([FromBody] PlaceDTO placeDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             _placeService.AddPlace(placeDto);
             return CreatedAtAction(nameof(GetById), new { id = placeDto.Id }, placeDto);
         }
 
         [HttpPut("api/places/{id}")]
-        [Authorize(Roles = "Admin")]
         public IActionResult UpdateApi(int id, [FromBody] PlaceDTO placeDto)
         {
-            if (id != placeDto.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var existingPlace = _placeService.GetPlaceById(id);
             if (existingPlace == null)
             {
@@ -163,14 +149,8 @@ namespace Places.WebAPI.Controllers
         }
 
         [HttpDelete("api/places/{id}")]
-        [Authorize(Roles = "Admin")]
         public IActionResult DeleteApi(int id)
         {
-            var place = _placeService.GetPlaceById(id);
-            if (place == null)
-            {
-                return NotFound();
-            }
             _placeService.DeletePlace(id);
             return NoContent();
         }

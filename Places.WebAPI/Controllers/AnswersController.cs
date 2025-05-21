@@ -133,11 +133,11 @@ public class AnswersController : Controller
     [HttpPost("api/answers")]
     public IActionResult CreateApi([FromBody] AnswerDTO answerDto)
     {
-        if (!ModelState.IsValid)
+        if (answerDto.UserId == 0)
         {
-            return BadRequest(ModelState);
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            answerDto.UserId = userIdString != null ? int.Parse(userIdString) : 1;
         }
-        answerDto.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         _answerService.AddAnswer(answerDto);
         return CreatedAtAction(nameof(GetById), new { id = answerDto.Id }, answerDto);
     }
@@ -145,27 +145,38 @@ public class AnswersController : Controller
     [HttpPut("api/answers/{id}")]
     public IActionResult UpdateApi(int id, [FromBody] AnswerDTO answerDto)
     {
-        if (id != answerDto.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        // Перевірка існування відповіді
         var existingAnswer = _answerService.GetAnswerById(id);
         if (existingAnswer == null)
         {
             return NotFound();
         }
+
         try
         {
+            // Перевірка існування питання
+            var question = _questionService.GetQuestionById(answerDto.QuestionId);
+            if (question == null)
+            {
+                return BadRequest("Question with specified ID does not exist");
+            }
+
+            // Перевірка існування користувача
+            var user = _userService.GetUserById(answerDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("User with specified ID does not exist");
+            }
+
+            // Оновлення відповіді
             _answerService.UpdateAnswer(answerDto);
             return NoContent();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, "Internal server error");
+            // Логування помилки (можна замінити на ваш логер, наприклад, ILogger)
+            Console.WriteLine($"Error updating answer: {ex.Message}\nStackTrace: {ex.StackTrace}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -176,11 +187,6 @@ public class AnswersController : Controller
         if (answer == null)
         {
             return NotFound();
-        }
-        var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        if (!User.IsInRole("Admin") && answer.UserId != currentUserId)
-        {
-            return Forbid();
         }
         _answerService.DeleteAnswer(id);
         return NoContent();
