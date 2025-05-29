@@ -8,107 +8,104 @@ using System.Linq;
 public class QuestionsController : Controller
 {
     private readonly IQuestionService _questionService;
-    private readonly IPlaceService _placeService;
-    private readonly IUserService _userService;
+        private readonly IPlaceService _placeService;
 
-    public QuestionsController(IQuestionService questionService, IPlaceService placeService, IUserService userService)
-    {
-        _questionService = questionService;
-        _placeService = placeService;
-        _userService = userService;
-    }
-
-    // WEB ACTIONS
-
-    [HttpGet]
-    public IActionResult Index()
-    {
-        var questions = _questionService.GetAllQuestions();
-        ViewBag.Places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
-        return View(questions);
-    }
-
-    [HttpGet]
-    [Authorize(Roles = "Admin,Manager")]
-    public IActionResult Create()
-    {
-        ViewBag.Places = _placeService.GetAllPlaces().ToList();
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Manager")]
-    public IActionResult Create(QuestionDTO questionDto)
-    {
-        if (ModelState.IsValid)
+        public QuestionsController(IQuestionService questionService, IPlaceService placeService)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            _questionService.AddQuestion(questionDto, userId);
-            return RedirectToAction("Index");
+            _questionService = questionService;
+            _placeService = placeService;
         }
-        ViewBag.Places = _placeService.GetAllPlaces().ToList();
-        return View(questionDto);
-    }
 
-    [HttpGet]
-    [Authorize(Roles = "Admin,Manager")]
-    public IActionResult Edit(int id)
-    {
-        var question = _questionService.GetQuestionById(id);
-        if (question == null)
+        // GET: Questions
+        public IActionResult Index()
         {
-            return NotFound();
+            var questions = _questionService.GetAllQuestions();
+            var places = _placeService.GetAllPlaces().ToDictionary(p => p.Id, p => p.Name);
+            ViewBag.Places = places;
+            return View(questions);
         }
-        ViewBag.Places = _placeService.GetAllPlaces().ToList();
-        return View(question);
-    }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Manager")]
-    public IActionResult Edit(QuestionDTO questionDto)
-    {
-        if (ModelState.IsValid)
+        // GET: Questions/Create
+        public IActionResult Create(int? placeId)
         {
-            try
+            ViewBag.Places = _placeService.GetAllPlaces();
+            var model = new QuestionDTO { PlaceId = placeId ?? 0 };
+            return View(model);
+        }
+
+        // POST: Questions/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(QuestionDTO questionDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+                _questionService.AddQuestion(questionDto, userId);
+                return RedirectToAction("Index");
+            }
+            ViewBag.Places = _placeService.GetAllPlaces();
+            return View(questionDto);
+        }
+
+        // GET: Questions/Edit/5
+        public IActionResult Edit(int id)
+        {
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+            ViewBag.Places = _placeService.GetAllPlaces();
+            return View(question);
+        }
+
+        // POST: Questions/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(QuestionDTO questionDto)
+        {
+            if (ModelState.IsValid)
             {
                 _questionService.UpdateQuestion(questionDto);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
-            catch (Exception)
+            ViewBag.Places = _placeService.GetAllPlaces();
+            return View(questionDto);
+        }
+
+        // GET: Questions/Details/5
+        public IActionResult Details(int id)
+        {
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
             {
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
+                return NotFound();
             }
+            var place = _placeService.GetPlaceById(question.PlaceId);
+            ViewBag.PlaceName = place?.Name ?? "Невідоме місце";
+            return View(question);
         }
-        ViewBag.Places = _placeService.GetAllPlaces().ToList();
-        return View(questionDto);
-    }
 
-    [HttpPost]
-    [Authorize(Roles = "Admin,Manager")]
-    public IActionResult Delete(int id)
-    {
-        var question = _questionService.GetQuestionById(id);
-        if (question == null)
+        // GET: Questions/Delete/5
+        public IActionResult Delete(int id)
         {
-            return NotFound();
+            var question = _questionService.GetQuestionById(id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+            return View(question);
         }
-        _questionService.DeleteQuestion(id);
-        return RedirectToAction("Index");
-    }
 
-    [HttpGet]
-    public IActionResult Details(int id)
-    {
-        var question = _questionService.GetQuestionById(id);
-        if (question == null)
+        // POST: Questions/DeleteConfirmed/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
         {
-            return NotFound();
+            _questionService.DeleteQuestion(id);
+            return RedirectToAction("Index");
         }
-        ViewBag.PlaceName = _placeService.GetPlaceById(question.PlaceId)?.Name;
-        return View(question);
-    }
 
     // API ACTIONS
 
